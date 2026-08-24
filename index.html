@@ -750,6 +750,70 @@
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    /* ── Transferencias ──────────────────────────────────── */
+    .tx-ico.transfer { background: rgba(167,139,250,.15); color: var(--purple); }
+    .tx-amt.transfer { color: var(--purple); }
+    .trf-dir { font-size:11px; color:var(--muted); font-weight:700; letter-spacing:.5px; }
+
+    /* ── Activos / Inversiones ───────────────────────────── */
+    .asset-item { display:flex; align-items:center; gap:12px; padding:14px 16px; background:var(--card); border:1px solid var(--border); border-radius:var(--rs); margin-bottom:8px; }
+    .asset-icon-wrap { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+    .asset-name { font-weight:700; font-size:14px; line-height:1.3; }
+    .asset-type-lbl { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+    .asset-val-main { font-size:16px; font-weight:800; text-align:right; }
+    .asset-gain.pos { color:var(--green); font-size:11px; font-weight:700; text-align:right; }
+    .asset-gain.neg { color:var(--red); font-size:11px; font-weight:700; text-align:right; }
+    .port-total-card { background:var(--card); border:1px solid var(--border); border-radius:var(--rs); padding:14px 16px; display:flex; gap:20px; margin-bottom:16px; flex-wrap:wrap; }
+    .port-total-item { display:flex; flex-direction:column; gap:2px; }
+    .port-total-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+    .port-total-val { font-size:20px; font-weight:800; }
+    .opt-label { font-size:11px; color:var(--muted); font-weight:400; text-transform:none; letter-spacing:0; }
+    .del-btn-plain { background:none; border:none; cursor:pointer; color:var(--muted); padding:4px; font-size:16px; }
+    .del-btn-plain:hover { color:var(--red); }
+
+    /* ── Suscripciones ───────────────────────────────────── */
+    .sub-item { display:flex; align-items:center; gap:12px; padding:14px 16px; background:var(--card); border:1px solid var(--border); border-radius:var(--rs); margin-bottom:8px; }
+    .sub-icon-wrap { width:44px; height:44px; border-radius:12px; background:rgba(167,139,250,.15); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+    .sub-name { font-weight:700; font-size:14px; }
+    .sub-meta { font-size:11px; color:var(--muted); margin-top:2px; }
+    .sub-amt { font-weight:800; font-size:15px; flex-shrink:0; }
+    .sub-inactive { opacity:.4; }
+    .sub-toggle-btn { background:none; border:2px solid var(--border); border-radius:6px; cursor:pointer; padding:4px 10px; font-size:11px; color:var(--muted); font-family:inherit; transition:.15s; flex-shrink:0; }
+    .sub-toggle-btn.active { border-color:var(--green); color:var(--green); }
+    .subs-total-card { background:var(--card); border:1px solid var(--border); border-radius:var(--rs); padding:14px 16px; display:flex; gap:20px; margin-bottom:16px; flex-wrap:wrap; }
+    .sub-icon-btn { width:46px; height:46px; border-radius:10px; background:var(--card2); border:1px solid var(--border); cursor:pointer; font-size:22px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+
+    /* ── Planificador ────────────────────────────────────── */
+    .plan-card { background:var(--card); border:1px solid var(--border); border-radius:var(--rs); padding:16px; margin-bottom:10px; }
+    .plan-card.avail { border-color:rgba(74,222,128,.35); background:rgba(74,222,128,.05); }
+    .plan-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border); gap:12px; }
+    .plan-row:last-child { border-bottom:none; }
+    .plan-lbl { color:var(--muted); font-size:13px; }
+    .plan-val { font-weight:800; font-size:14px; }
+    .plan-cat-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); }
+    .plan-cat-row:last-child { border-bottom:none; }
+    .plan-cat-name { flex:1; font-size:13px; }
+    .plan-cat-bar-wrap { width:80px; height:6px; background:var(--border); border-radius:3px; overflow:hidden; flex-shrink:0; }
+    .plan-cat-bar-fill { height:100%; border-radius:3px; }
+    .plan-cat-avg { font-size:13px; font-weight:700; min-width:75px; text-align:right; flex-shrink:0; }
+
+    /* ── Calendario ──────────────────────────────────────── */
+    .cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .cal-nav-btn { background:var(--card); border:1px solid var(--border); border-radius:var(--rs); padding:6px 14px; color:var(--text); cursor:pointer; font-size:18px; font-family:inherit; }
+    .cal-month-title { font-weight:700; font-size:16px; }
+    .cal-day-names { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; margin-bottom:4px; }
+    .cal-day-name-cell { text-align:center; font-size:11px; color:var(--muted); padding:4px 2px; font-weight:700; }
+    .cal-cells { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+    .cal-cell { background:var(--card); border:1px solid var(--border); border-radius:8px; min-height:64px; padding:5px; }
+    .cal-cell.today { border-color:var(--blue); background:rgba(96,165,250,.06); }
+    .cal-cell.off { opacity:.25; pointer-events:none; background:transparent; border-color:transparent; }
+    .cal-day-num { font-size:12px; font-weight:700; color:var(--muted); margin-bottom:3px; }
+    .cal-evt { font-size:9px; padding:2px 4px; border-radius:4px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.4; }
+    .cal-evt.inc { background:rgba(74,222,128,.18); color:var(--green); }
+    .cal-evt.exp { background:rgba(248,113,113,.18); color:var(--red); }
+    .cal-evt.dbt { background:rgba(251,146,60,.18); color:var(--orange); }
+    .cal-evt.sub { background:rgba(167,139,250,.18); color:var(--purple); }
   </style>
 </head>
 <body>
@@ -890,13 +954,14 @@
     <div class="field">
       <label>Tipo</label>
       <div class="seg">
-        <button class="seg-btn expense on" id="btn-expense" onclick="setType('expense')">↓ Gasto</button>
-        <button class="seg-btn income"     id="btn-income"  onclick="setType('income')">↑ Ingreso</button>
+        <button class="seg-btn expense on" id="btn-expense"  onclick="setType('expense')">↓ Gasto</button>
+        <button class="seg-btn income"     id="btn-income"   onclick="setType('income')">↑ Ingreso</button>
+        <button class="seg-btn"            id="btn-transfer" onclick="setType('transfer')">⇄ Transfer.</button>
       </div>
     </div>
 
     <div class="field">
-      <label>Moneda</label>
+      <label id="amtMonedaLbl">Moneda</label>
       <div class="seg">
         <button class="seg-btn USD on" id="btn-USD" onclick="setCurr('USD')">🇺🇸 USD</button>
         <button class="seg-btn UYU"    id="btn-UYU" onclick="setCurr('UYU')">🇺🇾 UYU</button>
@@ -904,11 +969,16 @@
     </div>
 
     <div class="field">
-      <label>Monto</label>
+      <label id="amtLabel">Monto</label>
       <input type="number" id="amtInp" placeholder="0.00" min="0.01" step="any" inputmode="decimal">
     </div>
 
-    <div class="field">
+    <div class="field" id="transferToField" style="display:none">
+      <label id="transferToLabel">Monto recibido (UYU)</label>
+      <input type="number" id="trfToAmt" placeholder="0.00" min="0.01" step="any" inputmode="decimal">
+    </div>
+
+    <div class="field" id="catField">
       <label>Categoría</label>
       <select id="catSel"></select>
     </div>
@@ -924,9 +994,10 @@
 
   <div class="stitle">Historial del mes</div>
   <div class="filters">
-    <button class="f-pill on" onclick="setFilter('all',this)">Todos</button>
-    <button class="f-pill"    onclick="setFilter('expense',this)">Gastos</button>
-    <button class="f-pill"    onclick="setFilter('income',this)">Ingresos</button>
+    <button class="f-pill on"  onclick="setFilter('all',this)">Todos</button>
+    <button class="f-pill"     onclick="setFilter('expense',this)">Gastos</button>
+    <button class="f-pill"     onclick="setFilter('income',this)">Ingresos</button>
+    <button class="f-pill"     onclick="setFilter('transfer',this)">Transferencias</button>
   </div>
   <div class="tx-list" id="txList"></div>
 
@@ -1097,6 +1168,174 @@
 
 </div>
 
+<!-- ── Pane: Activos / Inversiones ─────────────────────────── -->
+<div class="pane" id="pane-activos">
+
+  <div id="assetTotals"></div>
+
+  <div class="stitle">Agregar activo</div>
+  <div class="form-card">
+    <div class="field">
+      <label>Nombre</label>
+      <input class="inp" id="assetName" placeholder="Ej: Bitcoin, Acciones Apple, BROU..." maxlength="60">
+    </div>
+    <div class="field">
+      <label>Tipo</label>
+      <div class="seg" style="flex-wrap:wrap;gap:4px" id="assetTypeSeg">
+        <button class="seg-btn on" onclick="setAssetType('crypto',this)">₿ Cripto</button>
+        <button class="seg-btn"    onclick="setAssetType('stock',this)">📈 Acciones</button>
+        <button class="seg-btn"    onclick="setAssetType('savings',this)">💵 Ahorros</button>
+        <button class="seg-btn"    onclick="setAssetType('real_estate',this)">🏠 Inmueble</button>
+        <button class="seg-btn"    onclick="setAssetType('other',this)">🔮 Otro</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Moneda</label>
+      <div class="seg">
+        <button class="seg-btn USD on" id="assetCurrUSD" onclick="setAssetCurr('USD',this)">🇺🇸 USD</button>
+        <button class="seg-btn UYU"    id="assetCurrUYU" onclick="setAssetCurr('UYU',this)">🇺🇾 UYU</button>
+      </div>
+    </div>
+    <div class="field" style="display:flex;gap:8px">
+      <div style="flex:1">
+        <label>Valor actual</label>
+        <input class="inp" id="assetVal" type="number" step="any" min="0" placeholder="0.00">
+      </div>
+      <div style="flex:1">
+        <label>Valor de compra <span class="opt-label">(opcional)</span></label>
+        <input class="inp" id="assetBuyVal" type="number" step="any" min="0" placeholder="0.00">
+      </div>
+    </div>
+    <button class="submit-btn" onclick="addAsset()">Agregar activo</button>
+  </div>
+
+  <div class="stitle" style="margin-top:20px">Mis activos</div>
+  <div id="assetList"></div>
+
+</div>
+
+<!-- ── Pane: Suscripciones / Débitos ────────────────────────── -->
+<div class="pane" id="pane-subs">
+
+  <div id="subsTotals"></div>
+
+  <div class="stitle">Agregar suscripción</div>
+  <div class="form-card">
+    <div class="field" style="display:flex;gap:10px;align-items:flex-end">
+      <div>
+        <label>Icono</label>
+        <button class="sub-icon-btn" id="subIconBtn" onclick="toggleSubEmojiPicker()">📱</button>
+      </div>
+      <div style="flex:1">
+        <label>Nombre</label>
+        <input class="inp" id="subName" placeholder="Ej: Netflix, Spotify..." maxlength="50">
+      </div>
+    </div>
+    <div id="subEmojiPicker" style="display:none;margin-bottom:12px">
+      <div id="subEmojiGrid" class="emoji-grid" style="max-height:100px;overflow-y:auto"></div>
+    </div>
+    <div class="field" style="display:flex;gap:8px">
+      <div style="flex:1">
+        <label>Monto</label>
+        <input class="inp" id="subAmt" type="number" step="any" min="0" placeholder="0.00">
+      </div>
+      <div style="flex:1">
+        <label>Día de débito</label>
+        <input class="inp" id="subDay" type="number" min="1" max="31" placeholder="Ej: 15">
+      </div>
+    </div>
+    <div class="field">
+      <label>Moneda</label>
+      <div class="seg">
+        <button class="seg-btn USD on" id="subCurrUSD" onclick="setSubCurr('USD',this)">🇺🇸 USD</button>
+        <button class="seg-btn UYU"    id="subCurrUYU" onclick="setSubCurr('UYU',this)">🇺🇾 UYU</button>
+      </div>
+    </div>
+    <button class="submit-btn" onclick="addSub()">Agregar suscripción</button>
+  </div>
+
+  <div class="stitle" style="margin-top:20px">Mis suscripciones</div>
+  <div id="subList"></div>
+
+</div>
+
+<!-- ── Pane: Planificador ────────────────────────────────────── -->
+<div class="pane" id="pane-plan">
+
+  <div class="stitle">Ingreso mensual promedio <span class="opt-label">(últimos 3 meses)</span></div>
+  <div id="planIncome"></div>
+
+  <div class="stitle" style="margin-top:20px">Compromisos fijos mensuales</div>
+  <div id="planFixed"></div>
+
+  <div class="stitle" style="margin-top:20px">Disponible para gastar</div>
+  <div id="planAvail"></div>
+
+  <div class="stitle" style="margin-top:20px">Objetivo de ahorro mensual</div>
+  <div class="form-card" style="margin-bottom:20px">
+    <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+      <div style="flex:1;min-width:120px">
+        <label>Meta USD</label>
+        <input class="inp" id="savingsGoalUSD" type="number" step="any" min="0" placeholder="0.00">
+      </div>
+      <div style="flex:1;min-width:120px">
+        <label>Meta UYU</label>
+        <input class="inp" id="savingsGoalUYU" type="number" step="any" min="0" placeholder="0">
+      </div>
+      <button class="submit-btn" style="margin:0;flex-shrink:0" onclick="saveSavingsGoal()">Guardar</button>
+    </div>
+  </div>
+
+  <div class="stitle">Gasto promedio por categoría</div>
+  <div id="planCatBreakdown"></div>
+
+</div>
+
+<!-- ── Pane: Calendario ──────────────────────────────────────── -->
+<div class="pane" id="pane-cal">
+
+  <div class="cal-header">
+    <button class="cal-nav-btn" onclick="calShiftMonth(-1)">‹</button>
+    <span class="cal-month-title" id="calMonthTitle">—</span>
+    <button class="cal-nav-btn" onclick="calShiftMonth(1)">›</button>
+  </div>
+
+  <div style="margin-bottom:12px;display:flex;justify-content:flex-end">
+    <button class="submit-btn" style="font-size:12px;padding:8px 16px;margin:0" onclick="toggleAddCalEventForm()">+ Evento personalizado</button>
+  </div>
+
+  <div id="addCalEventForm" class="form-card" style="display:none;margin-bottom:16px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <div style="flex:2;min-width:130px">
+        <label>Nombre</label>
+        <input class="inp" id="calEventName" placeholder="Ej: Sueldo, cuota..." maxlength="50">
+      </div>
+      <div style="flex:1;min-width:80px">
+        <label>Día del mes</label>
+        <input class="inp" id="calEventDay" type="number" min="1" max="31" placeholder="1–31">
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+      <div style="flex:1;min-width:140px">
+        <label>Tipo</label>
+        <div class="seg">
+          <button class="seg-btn on" id="calEvtInc" onclick="setCalEvtType('income',this)">↑ Ingreso</button>
+          <button class="seg-btn"    id="calEvtExp" onclick="setCalEvtType('expense',this)">↓ Gasto</button>
+        </div>
+      </div>
+      <div style="flex:1;min-width:120px">
+        <label>Monto <span class="opt-label">(opcional)</span></label>
+        <input class="inp" id="calEventAmt" type="number" step="any" min="0" placeholder="0.00">
+      </div>
+    </div>
+    <button class="submit-btn" style="margin-top:12px" onclick="addCalEvent()">Agregar evento</button>
+  </div>
+
+  <div class="cal-day-names" id="calDayNames"></div>
+  <div class="cal-cells" id="calGrid"></div>
+
+</div>
+
 <!-- ── Bottom nav ──────────────────────────────────────────── -->
 <nav class="nav">
   <button class="nav-btn active" onclick="showTab('inicio',this)">
@@ -1143,6 +1382,36 @@
       <circle cx="11" cy="14.5" r="1" fill="currentColor" stroke="none"/>
     </svg>
     Cuentas
+  </button>
+  <button class="nav-btn" onclick="showTab('activos',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+      <polyline points="17 6 23 6 23 12"/>
+    </svg>
+    Activos
+  </button>
+  <button class="nav-btn" onclick="showTab('subs',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+    </svg>
+    Suscr.
+  </button>
+  <button class="nav-btn" onclick="showTab('plan',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <circle cx="12" cy="12" r="6"/>
+      <circle cx="12" cy="12" r="2"/>
+    </svg>
+    Planif.
+  </button>
+  <button class="nav-btn" onclick="showTab('cal',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+      <line x1="16" y1="2" x2="16" y2="6"/>
+      <line x1="8" y1="2" x2="8" y2="6"/>
+      <line x1="3" y1="10" x2="21" y2="10"/>
+    </svg>
+    Calend.
   </button>
 </nav>
 
@@ -1211,6 +1480,9 @@ let customCats     = [];
 let hiddenDefaults = [];
 let debts          = [];
 let accounts       = [];
+let assets         = [];
+let subscriptions  = [];
+let calEvents      = [];
 let selAccountId   = null;
 let selAccCurr     = 'USD';
 let selType        = 'expense';
@@ -1222,6 +1494,15 @@ let viewMonth      = new Date().getMonth();
 let viewYear       = new Date().getFullYear();
 let selDebtCurr    = 'UYU';
 let selDebtFilter  = 'active';
+let selAssetType   = 'crypto';
+let selAssetCurr   = 'USD';
+let selSubCurr     = 'USD';
+let selSubIcon     = '📱';
+let calViewMonth   = new Date().getMonth();
+let calViewYear    = new Date().getFullYear();
+let calEvtType     = 'income';
+let savingsGoalUSD = 0;
+let savingsGoalUYU = 0;
 
 // Firebase state
 let currentUser        = null;
@@ -1424,7 +1705,9 @@ function startListeners(uid) {
 
   firestoreListeners.push(
     base.collection('settings').doc('main').onSnapshot(doc => {
-      hiddenDefaults = doc.exists ? (doc.data().hiddenDefaults || []) : [];
+      hiddenDefaults  = doc.exists ? (doc.data().hiddenDefaults  || []) : [];
+      savingsGoalUSD  = doc.exists ? (doc.data().savingsGoalUSD  || 0)  : 0;
+      savingsGoalUYU  = doc.exists ? (doc.data().savingsGoalUYU  || 0)  : 0;
       if (appReady) { buildCatSelect(); renderCatList(); }
       markLoadedWithTimeout('settings');
     }, onFsError)
@@ -1447,6 +1730,22 @@ function startListeners(uid) {
       markLoadedWithTimeout('accounts');
     }, onFsError)
   );
+
+  // Non-blocking extra collections
+  base.collection('assets').onSnapshot(snap => {
+    assets = snap.docs.map(d => d.data()).sort((a,b) => (b.id > a.id ? 1 : -1));
+    if (appReady) renderAssetList();
+  }, err => console.error('assets:', err.code));
+
+  base.collection('subscriptions').onSnapshot(snap => {
+    subscriptions = snap.docs.map(d => d.data()).sort((a,b) => (a.billingDay||0) - (b.billingDay||0));
+    if (appReady) { renderSubList(); renderCalendar(); }
+  }, err => console.error('subscriptions:', err.code));
+
+  base.collection('events').onSnapshot(snap => {
+    calEvents = snap.docs.map(d => d.data());
+    if (appReady) renderCalendar();
+  }, err => console.error('events:', err.code));
 }
 
 function stopListeners() {
@@ -1498,7 +1797,7 @@ async function migrateLocalData(data) {
 }
 
 // ── Tab navigation ─────────────────────────────────────────
-const TAB_TITLES = { inicio: 'General', tx: 'Movimientos', cats: 'Categorías', deudas: 'Deudas', stats: 'Estadísticas', cuentas: 'Cuentas' };
+const TAB_TITLES = { inicio:'General', tx:'Movimientos', cats:'Categorías', deudas:'Deudas', stats:'Estadísticas', cuentas:'Cuentas', activos:'Activos', subs:'Suscripciones', plan:'Planificador', cal:'Calendario' };
 
 function showTab(id, btn) {
   document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
@@ -1506,20 +1805,36 @@ function showTab(id, btn) {
   document.getElementById('pane-' + id).classList.add('active');
   btn.classList.add('active');
   document.getElementById('pageTitle').textContent = TAB_TITLES[id] || id;
-  if (id === 'cuentas') buildAccFormSwatches();
+  if (id === 'cuentas')  buildAccFormSwatches();
+  if (id === 'activos')  renderAssetList();
+  if (id === 'subs')   { renderSubList(); buildSubEmojiGrid(); }
+  if (id === 'plan')     renderPlanner();
+  if (id === 'cal')      renderCalendar();
 }
 
 // ── Form controls ──────────────────────────────────────────
 function setType(t) {
   selType = t;
-  document.getElementById('btn-expense').classList.toggle('on', t === 'expense');
-  document.getElementById('btn-income').classList.toggle('on',  t === 'income');
+  document.getElementById('btn-expense').classList.toggle('on',  t === 'expense');
+  document.getElementById('btn-income').classList.toggle('on',   t === 'income');
+  document.getElementById('btn-transfer').classList.toggle('on', t === 'transfer');
+  const isTransfer = t === 'transfer';
+  document.getElementById('catField').style.display         = isTransfer ? 'none' : '';
+  document.getElementById('transferToField').style.display  = isTransfer ? '' : 'none';
+  if (isTransfer) _updateTrfLabel();
 }
 
 function setCurr(c) {
   selCurr = c;
   document.getElementById('btn-USD').classList.toggle('on', c === 'USD');
   document.getElementById('btn-UYU').classList.toggle('on', c === 'UYU');
+  if (selType === 'transfer') _updateTrfLabel();
+}
+
+function _updateTrfLabel() {
+  const dest = selCurr === 'USD' ? 'UYU' : 'USD';
+  document.getElementById('amtLabel').textContent        = `Monto enviado (${selCurr})`;
+  document.getElementById('transferToLabel').textContent = `Monto recibido (${dest})`;
 }
 
 // ── Add transaction ────────────────────────────────────────
@@ -1527,6 +1842,28 @@ function addTx() {
   const raw = document.getElementById('amtInp').value;
   const amt = parseFloat(raw);
   if (!raw || isNaN(amt) || amt <= 0) { toast('Ingresá un monto válido ⚠️'); return; }
+
+  if (selType === 'transfer') {
+    const rawTo = document.getElementById('trfToAmt').value;
+    const toAmt = parseFloat(rawTo);
+    if (!rawTo || isNaN(toAmt) || toAmt <= 0) { toast('Ingresá el monto recibido ⚠️'); return; }
+    const toC = selCurr === 'USD' ? 'UYU' : 'USD';
+    const tx = {
+      id:           'tx_' + Date.now(),
+      type:         'transfer',
+      fromCurrency: selCurr, toCurrency: toC,
+      fromAmount:   amt,     toAmount:   toAmt,
+      currency:     selCurr, amount:     amt,
+      note:         document.getElementById('noteInp').value.trim(),
+      date:         new Date().toISOString()
+    };
+    document.getElementById('amtInp').value  = '';
+    document.getElementById('trfToAmt').value = '';
+    document.getElementById('noteInp').value = '';
+    toast('Transferencia registrada ✓');
+    userBase().collection('transactions').doc(tx.id).set(tx).catch(() => toast('Error ⚠️'));
+    return;
+  }
 
   const tx = {
     id:       'tx_' + Date.now(),
@@ -1566,8 +1903,19 @@ function monthTxs() {
 function cumulativeBalance(currency) {
   const cutoff = new Date(viewYear, viewMonth + 1, 0, 23, 59, 59, 999);
   return txs
-    .filter(t => new Date(t.date) <= cutoff && t.currency === currency)
-    .reduce((s, t) => s + (t.type === 'income' ? t.amount : -t.amount), 0);
+    .filter(t => {
+      if (new Date(t.date) > cutoff) return false;
+      if (t.type === 'transfer') return t.fromCurrency === currency || t.toCurrency === currency;
+      return t.currency === currency;
+    })
+    .reduce((s, t) => {
+      if (t.type === 'transfer') {
+        if (t.fromCurrency === currency) return s - t.fromAmount;
+        if (t.toCurrency   === currency) return s + t.toAmount;
+        return s;
+      }
+      return s + (t.type === 'income' ? t.amount : -t.amount);
+    }, 0);
 }
 
 function selAccount() { return accounts.find(a => a.id === selAccountId) || null; }
@@ -1733,8 +2081,12 @@ function setFilter(f, btn) {
 }
 
 function renderTxList() {
-  const list = monthTxs().filter(t => selFilter === 'all' || t.type === selFilter);
-  const el   = document.getElementById('txList');
+  const list = monthTxs().filter(t => {
+    if (selFilter === 'all') return true;
+    if (selFilter === 'transfer') return t.type === 'transfer';
+    return t.type === selFilter && t.type !== 'transfer';
+  });
+  const el = document.getElementById('txList');
 
   if (!list.length) {
     el.innerHTML = `<div class="tx-empty"><div class="tx-empty-ico">📭</div><div>No hay transacciones<br>para este período</div></div>`;
@@ -1744,11 +2096,31 @@ function renderTxList() {
   const TRASH = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>`;
 
   el.innerHTML = list.map(t => {
-    const d      = new Date(t.date);
-    const dStr   = d.toLocaleDateString('es', { day: '2-digit', month: 'short' });
+    const d    = new Date(t.date);
+    const dStr = d.toLocaleDateString('es', { day: '2-digit', month: 'short' });
+
+    if (t.type === 'transfer') {
+      const fF = t.fromCurrency === 'USD' ? fmtUSD(t.fromAmount) : fmtUYU(t.fromAmount);
+      const fT = t.toCurrency   === 'USD' ? fmtUSD(t.toAmount)   : fmtUYU(t.toAmount);
+      return `
+        <div class="tx-item">
+          <div class="tx-ico transfer">⇄</div>
+          <div class="tx-body">
+            <div class="tx-cat">Transferencia</div>
+            <div class="tx-note trf-dir">${t.fromCurrency} → ${t.toCurrency}</div>
+            ${t.note ? `<div class="tx-note">${esc(t.note)}</div>` : ''}
+            <div class="tx-date">${dStr}</div>
+          </div>
+          <div class="tx-right">
+            <div class="tx-amt transfer">−${esc(fF)}</div>
+            <div class="tx-curr-tag">+${esc(fT)}</div>
+          </div>
+          <button class="tx-del" onclick="delTx('${esc(String(t.id))}')" title="Eliminar">${TRASH}</button>
+        </div>`;
+    }
+
     const sign   = t.type === 'income' ? '+' : '−';
     const fmtAmt = t.currency === 'USD' ? fmtUSD(t.amount) : fmtUYU(t.amount);
-
     return `
       <div class="tx-item">
         <div class="tx-ico ${t.type}">${getCatIcon(t.category)}</div>
@@ -2550,6 +2922,364 @@ function refresh() {
   renderAccountList();
   updateBackupStat();
   renderStats();
+  renderAssetList();
+  renderSubList();
+}
+
+// ═══════════════════════════════════════════════════════════
+// ACTIVOS / INVERSIONES
+// ═══════════════════════════════════════════════════════════
+function setAssetType(t, btn) {
+  selAssetType = t;
+  document.querySelectorAll('#assetTypeSeg .seg-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+}
+function setAssetCurr(c, btn) {
+  selAssetCurr = c;
+  document.getElementById('assetCurrUSD').classList.toggle('on', c === 'USD');
+  document.getElementById('assetCurrUYU').classList.toggle('on', c === 'UYU');
+}
+function addAsset() {
+  const name = document.getElementById('assetName').value.trim();
+  if (!name) { toast('Ingresá un nombre ⚠️'); return; }
+  const valRaw = document.getElementById('assetVal').value;
+  const val = parseFloat(valRaw);
+  if (!valRaw || isNaN(val) || val < 0) { toast('Ingresá un valor válido ⚠️'); return; }
+  const buyRaw = document.getElementById('assetBuyVal').value;
+  const buyVal = buyRaw ? parseFloat(buyRaw) : null;
+  const asset = {
+    id: 'asset_' + Date.now(),
+    name, type: selAssetType, currency: selAssetCurr,
+    currentValue: val,
+    purchaseValue: (buyVal && !isNaN(buyVal) && buyVal > 0) ? buyVal : null,
+    updatedAt: new Date().toISOString()
+  };
+  document.getElementById('assetName').value   = '';
+  document.getElementById('assetVal').value    = '';
+  document.getElementById('assetBuyVal').value = '';
+  toast('Activo agregado ✓');
+  userBase().collection('assets').doc(asset.id).set(asset).catch(() => toast('Error ⚠️'));
+}
+function delAsset(id) {
+  if (!confirm('¿Eliminar este activo?')) return;
+  toast('Eliminado');
+  userBase().collection('assets').doc(id).delete().catch(() => toast('Error ⚠️'));
+}
+const ASSET_LABELS = { crypto:'₿ Cripto', stock:'📈 Acciones', savings:'💵 Ahorros', real_estate:'🏠 Inmueble', other:'🔮 Otro' };
+const ASSET_BG     = { crypto:'rgba(251,146,60,.15)', stock:'rgba(74,222,128,.15)', savings:'rgba(96,165,250,.15)', real_estate:'rgba(167,139,250,.15)', other:'rgba(100,116,139,.15)' };
+function renderAssetList() {
+  const el = document.getElementById('assetList');
+  if (!el) return;
+  const totalsEl = document.getElementById('assetTotals');
+  if (totalsEl) {
+    const tUSD = assets.filter(a => a.currency === 'USD').reduce((s,a) => s + a.currentValue, 0);
+    const tUYU = assets.filter(a => a.currency === 'UYU').reduce((s,a) => s + a.currentValue, 0);
+    const rows = [];
+    if (assets.some(a => a.currency === 'USD')) rows.push(`<div class="port-total-item"><div class="port-total-label">Portafolio USD</div><div class="port-total-val" style="color:var(--blue)">${fmtUSD(tUSD)}</div></div>`);
+    if (assets.some(a => a.currency === 'UYU')) rows.push(`<div class="port-total-item"><div class="port-total-label">Portafolio UYU</div><div class="port-total-val" style="color:var(--orange)">${fmtUYU(tUYU)}</div></div>`);
+    totalsEl.innerHTML = rows.length ? `<div class="port-total-card">${rows.join('')}</div>` : '';
+  }
+  if (!assets.length) {
+    el.innerHTML = `<div class="tx-empty"><div class="tx-empty-ico">📊</div><div>Sin activos registrados</div></div>`;
+    return;
+  }
+  el.innerHTML = assets.map(a => {
+    const typeLabel = ASSET_LABELS[a.type] || a.type;
+    const icon  = typeLabel.split(' ')[0];
+    const bg    = ASSET_BG[a.type] || 'rgba(100,116,139,.15)';
+    const valStr = a.currency === 'USD' ? fmtUSD(a.currentValue) : fmtUYU(a.currentValue);
+    const valColor = a.currency === 'USD' ? 'var(--blue)' : 'var(--orange)';
+    let gainHtml = '';
+    if (a.purchaseValue && a.purchaseValue > 0) {
+      const gain = a.currentValue - a.purchaseValue;
+      const pct  = (gain / a.purchaseValue * 100).toFixed(1);
+      gainHtml = `<div class="asset-gain ${gain >= 0 ? 'pos' : 'neg'}">${gain >= 0 ? '+' : ''}${pct}%</div>`;
+    }
+    return `<div class="asset-item">
+      <div class="asset-icon-wrap" style="background:${bg}">${icon}</div>
+      <div style="flex:1;min-width:0">
+        <div class="asset-name">${esc(a.name)}</div>
+        <div class="asset-type-lbl">${typeLabel}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div class="asset-val-main" style="color:${valColor}">${esc(valStr)}</div>
+        ${gainHtml}
+      </div>
+      <button class="del-btn-plain" onclick="delAsset('${esc(a.id)}')" title="Eliminar">🗑</button>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// SUSCRIPCIONES / DÉBITOS AUTOMÁTICOS
+// ═══════════════════════════════════════════════════════════
+const SUB_EMOJI_PRESETS = ['📱','🎬','🎵','🎮','📰','🎓','🏋️','🛒','💊','🔧','☁️','📧','🎨','🏠','🚀','💻','📺','🌐','🤖','🎭'];
+function buildSubEmojiGrid() {
+  const grid = document.getElementById('subEmojiGrid');
+  if (!grid || grid.dataset.built) return;
+  grid.dataset.built = '1';
+  grid.innerHTML = SUB_EMOJI_PRESETS.map(e =>
+    `<button class="emoji-btn" onclick="selectSubEmoji('${e}')" data-e="${e}">${e}</button>`
+  ).join('');
+}
+function selectSubEmoji(e) {
+  selSubIcon = e;
+  document.querySelectorAll('#subEmojiGrid .emoji-btn').forEach(b => b.classList.toggle('sel', b.dataset.e === e));
+  document.getElementById('subIconBtn').textContent = e;
+  document.getElementById('subEmojiPicker').style.display = 'none';
+}
+function toggleSubEmojiPicker() {
+  const p = document.getElementById('subEmojiPicker');
+  p.style.display = p.style.display === 'none' ? '' : 'none';
+  buildSubEmojiGrid();
+}
+function setSubCurr(c, btn) {
+  selSubCurr = c;
+  document.getElementById('subCurrUSD').classList.toggle('on', c === 'USD');
+  document.getElementById('subCurrUYU').classList.toggle('on', c === 'UYU');
+}
+function addSub() {
+  const name = document.getElementById('subName').value.trim();
+  if (!name) { toast('Ingresá un nombre ⚠️'); return; }
+  const amt  = parseFloat(document.getElementById('subAmt').value);
+  if (!amt || isNaN(amt) || amt <= 0) { toast('Ingresá un monto ⚠️'); return; }
+  const day  = parseInt(document.getElementById('subDay').value);
+  if (!day || isNaN(day) || day < 1 || day > 31) { toast('Día inválido (1–31) ⚠️'); return; }
+  const sub = {
+    id: 'sub_' + Date.now(),
+    name, icon: selSubIcon, amount: amt, currency: selSubCurr,
+    billingDay: day, active: true, createdAt: new Date().toISOString()
+  };
+  document.getElementById('subName').value = '';
+  document.getElementById('subAmt').value  = '';
+  document.getElementById('subDay').value  = '';
+  toast('Suscripción agregada ✓');
+  userBase().collection('subscriptions').doc(sub.id).set(sub).catch(() => toast('Error ⚠️'));
+}
+function deleteSub(id) {
+  if (!confirm('¿Eliminar suscripción?')) return;
+  toast('Eliminada');
+  userBase().collection('subscriptions').doc(id).delete().catch(() => toast('Error ⚠️'));
+}
+function toggleSub(id) {
+  const sub = subscriptions.find(s => s.id === id);
+  if (!sub) return;
+  userBase().collection('subscriptions').doc(id).update({ active: !sub.active }).catch(() => toast('Error ⚠️'));
+}
+function renderSubList() {
+  const listEl   = document.getElementById('subList');
+  const totalsEl = document.getElementById('subsTotals');
+  if (!listEl) return;
+  const tUSD = subscriptions.filter(s => s.active && s.currency === 'USD').reduce((s,x) => s + x.amount, 0);
+  const tUYU = subscriptions.filter(s => s.active && s.currency === 'UYU').reduce((s,x) => s + x.amount, 0);
+  if (totalsEl) {
+    const rows = [];
+    if (subscriptions.some(s => s.currency === 'USD')) rows.push(`<div class="port-total-item"><div class="port-total-label">Mensual USD</div><div class="port-total-val" style="color:var(--blue)">${fmtUSD(tUSD)}</div></div>`);
+    if (subscriptions.some(s => s.currency === 'UYU')) rows.push(`<div class="port-total-item"><div class="port-total-label">Mensual UYU</div><div class="port-total-val" style="color:var(--orange)">${fmtUYU(tUYU)}</div></div>`);
+    totalsEl.innerHTML = rows.length ? `<div class="subs-total-card">${rows.join('')}</div>` : '';
+  }
+  if (!subscriptions.length) {
+    listEl.innerHTML = `<div class="tx-empty"><div class="tx-empty-ico">📅</div><div>Sin suscripciones registradas</div></div>`;
+    return;
+  }
+  listEl.innerHTML = subscriptions.map(sub => {
+    const amtStr = sub.currency === 'USD' ? fmtUSD(sub.amount) : fmtUYU(sub.amount);
+    const color  = sub.currency === 'USD' ? 'var(--blue)' : 'var(--orange)';
+    return `<div class="sub-item${sub.active ? '' : ' sub-inactive'}">
+      <div class="sub-icon-wrap">${esc(sub.icon || '📱')}</div>
+      <div style="flex:1;min-width:0">
+        <div class="sub-name">${esc(sub.name)}</div>
+        <div class="sub-meta">Día ${sub.billingDay} de cada mes · ${sub.currency}</div>
+      </div>
+      <div class="sub-amt" style="color:${color}">${esc(amtStr)}</div>
+      <button class="sub-toggle-btn${sub.active?' active':''}" onclick="toggleSub('${esc(sub.id)}')">${sub.active?'Activa':'Pausada'}</button>
+      <button class="del-btn-plain" onclick="deleteSub('${esc(sub.id)}')" title="Eliminar">🗑</button>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// PLANIFICADOR
+// ═══════════════════════════════════════════════════════════
+function saveSavingsGoal() {
+  const gUSD = parseFloat(document.getElementById('savingsGoalUSD').value) || 0;
+  const gUYU = parseFloat(document.getElementById('savingsGoalUYU').value) || 0;
+  userBase().collection('settings').doc('main')
+    .set({ savingsGoalUSD: gUSD, savingsGoalUYU: gUYU }, { merge: true })
+    .then(() => toast('Objetivo guardado ✓'))
+    .catch(() => toast('Error ⚠️'));
+}
+function renderPlanner() {
+  const planIncEl = document.getElementById('planIncome');
+  const planFixEl = document.getElementById('planFixed');
+  const planAvaEl = document.getElementById('planAvail');
+  const planCatEl = document.getElementById('planCatBreakdown');
+  if (!planIncEl) return;
+
+  const gUSDEl = document.getElementById('savingsGoalUSD');
+  const gUYUEl = document.getElementById('savingsGoalUYU');
+  if (gUSDEl && !gUSDEl.value) gUSDEl.value = savingsGoalUSD || '';
+  if (gUYUEl && !gUYUEl.value) gUYUEl.value = savingsGoalUYU || '';
+
+  const now = new Date();
+  const last3 = [0,1,2].map(i => {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    return { year: d.getFullYear(), month: d.getMonth() };
+  });
+
+  function avgIncome(curr) {
+    const sums = last3.map(({ year, month }) =>
+      txs.filter(t => {
+        const d = new Date(t.date);
+        return d.getFullYear() === year && d.getMonth() === month && t.type === 'income' && t.currency === curr;
+      }).reduce((s,t) => s + t.amount, 0)
+    );
+    const nonZero = sums.filter(v => v > 0);
+    return nonZero.length ? nonZero.reduce((s,v) => s+v,0) / nonZero.length : 0;
+  }
+
+  const avgUSD = avgIncome('USD');
+  const avgUYU = avgIncome('UYU');
+
+  const subsUSD = subscriptions.filter(s => s.active && s.currency === 'USD').reduce((s,x) => s+x.amount, 0);
+  const subsUYU = subscriptions.filter(s => s.active && s.currency === 'UYU').reduce((s,x) => s+x.amount, 0);
+  const debtUSD = debts.filter(d => !d.paid && d.currency === 'USD').reduce((s,d) => s + (d.amount||0)/12, 0);
+  const debtUYU = debts.filter(d => !d.paid && d.currency === 'UYU').reduce((s,d) => s + (d.amount||0)/12, 0);
+
+  const availUSD = avgUSD - subsUSD - debtUSD - savingsGoalUSD;
+  const availUYU = avgUYU - subsUYU - debtUYU - savingsGoalUYU;
+
+  planIncEl.innerHTML = `<div class="plan-card">
+    ${avgUSD>0 ? `<div class="plan-row"><span class="plan-lbl">Promedio mensual USD</span><span class="plan-val" style="color:var(--green)">${fmtUSD(avgUSD)}</span></div>` : ''}
+    ${avgUYU>0 ? `<div class="plan-row"><span class="plan-lbl">Promedio mensual UYU</span><span class="plan-val" style="color:var(--green)">${fmtUYU(avgUYU)}</span></div>` : ''}
+    ${!avgUSD && !avgUYU ? '<div style="color:var(--muted);font-size:13px">Sin ingresos en los últimos 3 meses</div>' : ''}
+  </div>`;
+
+  const fixedRows = [];
+  if (subsUSD>0) fixedRows.push(`<div class="plan-row"><span class="plan-lbl">📱 Suscripciones USD</span><span class="plan-val" style="color:var(--red)">−${fmtUSD(subsUSD)}</span></div>`);
+  if (subsUYU>0) fixedRows.push(`<div class="plan-row"><span class="plan-lbl">📱 Suscripciones UYU</span><span class="plan-val" style="color:var(--red)">−${fmtUYU(subsUYU)}</span></div>`);
+  if (debtUSD>0) fixedRows.push(`<div class="plan-row"><span class="plan-lbl">💳 Cuota estimada deudas USD</span><span class="plan-val" style="color:var(--orange)">−${fmtUSD(debtUSD)}</span></div>`);
+  if (debtUYU>0) fixedRows.push(`<div class="plan-row"><span class="plan-lbl">💳 Cuota estimada deudas UYU</span><span class="plan-val" style="color:var(--orange)">−${fmtUYU(debtUYU)}</span></div>`);
+  if (savingsGoalUSD>0) fixedRows.push(`<div class="plan-row"><span class="plan-lbl">🎯 Ahorro meta USD</span><span class="plan-val" style="color:var(--blue)">−${fmtUSD(savingsGoalUSD)}</span></div>`);
+  if (savingsGoalUYU>0) fixedRows.push(`<div class="plan-row"><span class="plan-lbl">🎯 Ahorro meta UYU</span><span class="plan-val" style="color:var(--blue)">−${fmtUYU(savingsGoalUYU)}</span></div>`);
+  planFixEl.innerHTML = `<div class="plan-card">${fixedRows.length ? fixedRows.join('') : '<div style="color:var(--muted);font-size:13px">Sin compromisos fijos registrados</div>'}</div>`;
+
+  const availRows = [];
+  if (avgUSD > 0) { const c = availUSD >= 0 ? 'var(--green)' : 'var(--red)'; availRows.push(`<div class="plan-row"><span class="plan-lbl">Disponible USD</span><span class="plan-val" style="color:${c}">${fmtUSD(availUSD)}</span></div>`); }
+  if (avgUYU > 0) { const c = availUYU >= 0 ? 'var(--green)' : 'var(--red)'; availRows.push(`<div class="plan-row"><span class="plan-lbl">Disponible UYU</span><span class="plan-val" style="color:${c}">${fmtUYU(availUYU)}</span></div>`); }
+  planAvaEl.innerHTML = `<div class="plan-card avail">${availRows.length ? availRows.join('') : '<div style="color:var(--muted);font-size:13px">Agregá ingresos para ver el disponible</div>'}</div>`;
+
+  const catTotals = {};
+  last3.forEach(({ year, month }) => {
+    txs.filter(t => { const d = new Date(t.date); return d.getFullYear()===year && d.getMonth()===month && t.type==='expense'; })
+       .forEach(t => { const k = t.category+'|'+t.currency; catTotals[k] = (catTotals[k]||0) + t.amount; });
+  });
+  const catEntries = Object.entries(catTotals)
+    .map(([k, tot]) => { const [catId, currency] = k.split('|'); return { catId, currency, avg: tot / last3.length }; })
+    .sort((a,b) => b.avg - a.avg);
+  const maxAvg = catEntries.reduce((m,e) => Math.max(m,e.avg), 0);
+  planCatEl.innerHTML = `<div class="plan-card">${catEntries.length ? catEntries.map(e => {
+    const color  = e.currency === 'USD' ? 'var(--blue)' : 'var(--orange)';
+    const barW   = maxAvg > 0 ? Math.round(e.avg / maxAvg * 100) : 0;
+    const amtStr = e.currency === 'USD' ? fmtUSD(e.avg) : fmtUYU(e.avg);
+    return `<div class="plan-cat-row">
+      <span style="font-size:16px">${getCatIcon(e.catId)}</span>
+      <div style="flex:1;min-width:0">
+        <div class="plan-cat-name">${esc(getCatName(e.catId))}</div>
+        <div class="plan-cat-bar-wrap"><div class="plan-cat-bar-fill" style="width:${barW}%;background:${color}"></div></div>
+      </div>
+      <div class="plan-cat-avg" style="color:${color}">${esc(amtStr)}</div>
+    </div>`;
+  }).join('') : '<div style="color:var(--muted);font-size:13px">Sin datos históricos de gastos</div>'}</div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// CALENDARIO
+// ═══════════════════════════════════════════════════════════
+function calShiftMonth(dir) {
+  calViewMonth += dir;
+  if (calViewMonth > 11) { calViewMonth = 0; calViewYear++; }
+  if (calViewMonth < 0)  { calViewMonth = 11; calViewYear--; }
+  renderCalendar();
+}
+function toggleAddCalEventForm() {
+  const f = document.getElementById('addCalEventForm');
+  f.style.display = f.style.display === 'none' ? '' : 'none';
+}
+function setCalEvtType(t, btn) {
+  calEvtType = t;
+  document.getElementById('calEvtInc').classList.toggle('on', t === 'income');
+  document.getElementById('calEvtExp').classList.toggle('on', t === 'expense');
+}
+function addCalEvent() {
+  const name = document.getElementById('calEventName').value.trim();
+  if (!name) { toast('Ingresá un nombre ⚠️'); return; }
+  const day = parseInt(document.getElementById('calEventDay').value);
+  if (!day || isNaN(day) || day < 1 || day > 31) { toast('Día inválido (1–31) ⚠️'); return; }
+  const amtRaw = document.getElementById('calEventAmt').value;
+  const amt = amtRaw ? parseFloat(amtRaw) : null;
+  const evt = {
+    id: 'evt_' + Date.now(),
+    name, type: calEvtType, day,
+    amount: (amt && !isNaN(amt) && amt > 0) ? amt : null,
+    icon: calEvtType === 'income' ? '💰' : '💸'
+  };
+  document.getElementById('calEventName').value = '';
+  document.getElementById('calEventDay').value  = '';
+  document.getElementById('calEventAmt').value  = '';
+  document.getElementById('addCalEventForm').style.display = 'none';
+  toast('Evento agregado ✓');
+  userBase().collection('events').doc(evt.id).set(evt).catch(() => toast('Error ⚠️'));
+}
+function delCalEvent(id) {
+  userBase().collection('events').doc(id).delete().catch(() => toast('Error ⚠️'));
+}
+function renderCalendar() {
+  const dayNamesEl = document.getElementById('calDayNames');
+  const gridEl     = document.getElementById('calGrid');
+  const titleEl    = document.getElementById('calMonthTitle');
+  if (!gridEl) return;
+
+  const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const DAYS   = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  titleEl.textContent = MONTHS[calViewMonth] + ' ' + calViewYear;
+  dayNamesEl.innerHTML = DAYS.map(d => `<div class="cal-day-name-cell">${d}</div>`).join('');
+
+  const firstDay    = new Date(calViewYear, calViewMonth, 1).getDay();
+  const daysInMonth = new Date(calViewYear, calViewMonth + 1, 0).getDate();
+  const today       = new Date();
+
+  const evtByDay = {};
+  subscriptions.filter(s => s.active).forEach(sub => {
+    const d = Math.min(sub.billingDay, daysInMonth);
+    if (!evtByDay[d]) evtByDay[d] = [];
+    evtByDay[d].push({ cls:'sub', lbl:`${sub.icon||'📱'} ${sub.name}` });
+  });
+  debts.filter(d => !d.paid && d.dueDate).forEach(debt => {
+    const dDate = new Date(debt.dueDate);
+    if (dDate.getMonth() === calViewMonth && dDate.getFullYear() === calViewYear) {
+      const d = dDate.getDate();
+      if (!evtByDay[d]) evtByDay[d] = [];
+      evtByDay[d].push({ cls:'dbt', lbl:`💳 ${debt.name||'Deuda'}` });
+    }
+  });
+  calEvents.forEach(evt => {
+    const d = Math.min(evt.day, daysInMonth);
+    if (!evtByDay[d]) evtByDay[d] = [];
+    evtByDay[d].push({ cls: evt.type === 'income' ? 'inc' : 'exp', lbl:`${evt.icon||''} ${evt.name}`, id: evt.id });
+  });
+
+  let cells = '';
+  for (let i = 0; i < firstDay; i++) cells += `<div class="cal-cell off"></div>`;
+  for (let day = 1; day <= daysInMonth; day++) {
+    const isToday = today.getDate()===day && today.getMonth()===calViewMonth && today.getFullYear()===calViewYear;
+    const evts    = evtByDay[day] || [];
+    const evtHtml = evts.slice(0,3).map(e =>
+      `<div class="cal-evt ${e.cls}"${e.id ? ` onclick="if(confirm('¿Eliminar evento?'))delCalEvent('${esc(e.id)}')" style="cursor:pointer"` : ''}>${esc(e.lbl)}</div>`
+    ).join('') + (evts.length > 3 ? `<div class="cal-evt" style="color:var(--muted)">+${evts.length-3}</div>` : '');
+    cells += `<div class="cal-cell${isToday?' today':''}"><div class="cal-day-num">${day}</div>${evtHtml}</div>`;
+  }
+  gridEl.innerHTML = cells;
 }
 
 // ── Init ───────────────────────────────────────────────────
