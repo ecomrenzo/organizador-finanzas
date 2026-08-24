@@ -38,7 +38,7 @@
       font-size: 14px;
       line-height: 1.5;
       min-height: 100vh;
-      max-width: 860px;
+      max-width: 1100px;
       margin: 0;
       padding-bottom: 20px;
       padding-left: 104px;
@@ -198,7 +198,7 @@
       justify-content: flex-start;
       gap: 2px;
       z-index: 100;
-      padding: 40px 6px 24px;
+      padding: 100px 6px 24px;
     }
 
     .nav-btn {
@@ -235,8 +235,8 @@
 
     .scard {
       background: var(--card); border: 1px solid var(--border);
-      border-radius: var(--r); padding: 16px 14px;
-      position: relative; overflow: hidden;
+      border-radius: var(--r); padding: 20px 16px;
+      position: relative; overflow: hidden; min-height: 90px;
     }
 
     .scard::after {
@@ -858,14 +858,14 @@
         <div class="chart-card" id="chartUSDCard" style="display:none">
           <div class="chart-curr-header"><span class="curr-chip usd">🇺🇸 USD</span></div>
           <div class="chart-inner" id="chartInnerUSD">
-            <canvas id="donutUSD" width="180" height="180"></canvas>
+            <svg id="donutUSD" width="180" height="180" viewBox="0 0 180 180" style="flex-shrink:0"></svg>
             <div class="chart-legend" id="legendUSD"></div>
           </div>
         </div>
         <div class="chart-card" id="chartUYUCard" style="display:none">
           <div class="chart-curr-header"><span class="curr-chip uyu">🇺🇾 UYU</span></div>
           <div class="chart-inner" id="chartInnerUYU">
-            <canvas id="donutUYU" width="180" height="180"></canvas>
+            <svg id="donutUYU" width="180" height="180" viewBox="0 0 180 180" style="flex-shrink:0"></svg>
             <div class="chart-legend" id="legendUYU"></div>
           </div>
         </div>
@@ -1671,67 +1671,56 @@ function renderChart() {
   if (hasUYU) renderCurrChart('UYU', 'donutUYU', 'chartInnerUYU', 'legendUYU');
 }
 
-function renderCurrChart(currency, canvasId, innerId, legendId) {
+function renderCurrChart(currency, svgId, innerId, legendId) {
   const expenses = monthTxs().filter(t => t.type === 'expense' && t.currency === currency);
   const bycat = {};
   expenses.forEach(t => { bycat[t.category] = (bycat[t.category] || 0) + t.amount; });
 
   const entries = Object.entries(bycat).map(([id, value]) => ({
     id, value,
-    name:  getCatName(id),
-    icon:  getCatIcon(id),
-    color: getCatColor(id),
+    name: getCatName(id),
+    icon: getCatIcon(id),
   })).sort((a, b) => b.value - a.value);
 
-  const total = entries.reduce((s, e) => s + e.value, 0);
-
-  // Assign colors by position so each category always gets a distinct color
   entries.forEach((e, i) => { e.color = PALETTE[i % PALETTE.length]; });
 
-  const canvas = document.getElementById(canvasId);
-  const ctx    = canvas.getContext('2d');
-  const W = 180, cx = W / 2, cy = W / 2, R = 78, r = 46;
-  const GAP = entries.length > 1 ? 0.04 : 0;
+  const total = entries.reduce((s, e) => s + e.value, 0);
+  const cx = 90, cy = 90, R = 78, r = 46;
+  const GAP = entries.length > 1 ? 0.03 : 0;
 
-  canvas.width = canvas.height = W;
-  ctx.clearRect(0, 0, W, W);
   let angle = -Math.PI / 2;
+  let paths = '';
 
   entries.forEach(e => {
     const sweep = (e.value / total) * (Math.PI * 2 - GAP * entries.length);
-    const a1 = angle + GAP / 2, a2 = angle + sweep - GAP / 2;
-    ctx.beginPath();
-    ctx.arc(cx, cy, R, a1, a2);
-    ctx.arc(cx, cy, r, a2, a1, true);
-    ctx.closePath();
-    ctx.fillStyle = e.color;
-    ctx.fill();
+    const a1 = angle + GAP / 2;
+    const a2 = angle + sweep - GAP / 2;
+    const large = sweep - GAP > Math.PI ? 1 : 0;
+
+    const x1 = cx + R * Math.cos(a1), y1 = cy + R * Math.sin(a1);
+    const x2 = cx + R * Math.cos(a2), y2 = cy + R * Math.sin(a2);
+    const ix1 = cx + r * Math.cos(a2), iy1 = cy + r * Math.sin(a2);
+    const ix2 = cx + r * Math.cos(a1), iy2 = cy + r * Math.sin(a1);
+
+    paths += `<path d="M${x1.toFixed(2)},${y1.toFixed(2)} A${R},${R},0,${large},1,${x2.toFixed(2)},${y2.toFixed(2)} L${ix1.toFixed(2)},${iy1.toFixed(2)} A${r},${r},0,${large},0,${ix2.toFixed(2)},${iy2.toFixed(2)} Z" fill="${e.color}"/>`;
     angle += sweep;
   });
 
-  const bg = getComputedStyle(document.documentElement).getPropertyValue('--card').trim() || '#1e1e2e';
-  ctx.beginPath();
-  ctx.arc(cx, cy, r - 2, 0, Math.PI * 2);
-  ctx.fillStyle = bg;
-  ctx.fill();
-
-  const fg = getComputedStyle(document.documentElement).getPropertyValue('--muted').trim() || '#8892a4';
-  ctx.fillStyle = fg;
-  ctx.font = 'bold 13px system-ui';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(entries.length + (entries.length === 1 ? ' cat.' : ' cats'), cx, cy);
+  const label = entries.length + (entries.length === 1 ? ' cat.' : ' cats');
+  document.getElementById(svgId).innerHTML =
+    paths +
+    `<circle cx="${cx}" cy="${cy}" r="${r - 2}" fill="var(--card)"/>` +
+    `<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" fill="var(--muted)" font-size="12" font-weight="700" font-family="system-ui">${label}</text>`;
 
   document.getElementById(legendId).innerHTML = entries.map(e => {
-    const label = chartMode === 'pct'
+    const lbl = chartMode === 'pct'
       ? Math.round(e.value / total * 100) + '%'
       : (currency === 'USD' ? fmtUSD(e.value) : fmtUYU(e.value));
-    return `
-      <div class="leg-row">
-        <div class="leg-dot" style="background:${e.color}"></div>
-        <span class="leg-name">${e.icon} ${esc(e.name)}</span>
-        <span class="leg-pct" style="color:${e.color}">${label}</span>
-      </div>`;
+    return `<div class="leg-row">
+      <div class="leg-dot" style="background:${e.color}"></div>
+      <span class="leg-name">${e.icon} ${esc(e.name)}</span>
+      <span class="leg-pct" style="color:${e.color}">${lbl}</span>
+    </div>`;
   }).join('');
 }
 
