@@ -1,0 +1,2583 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finanzas Personales</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0d15;
+      --surface:   #13131f;
+      --card:      #1a1a28;
+      --card2:     #222234;
+      --border:    #272740;
+      --green:     #4ade80;
+      --green-bg:  rgba(74,222,128,.10);
+      --red:       #f87171;
+      --red-bg:    rgba(248,113,113,.10);
+      --blue:      #60a5fa;
+      --blue-bg:   rgba(96,165,250,.11);
+      --orange:    #fb923c;
+      --orange-bg: rgba(251,146,60,.11);
+      --purple:    #a78bfa;
+      --text:      #e2e8f0;
+      --muted:     #8892a4;
+      --dim:       #4a5568;
+      --r:         16px;
+      --rs:        10px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+      max-width: 860px;
+      margin: 0;
+      padding-bottom: 20px;
+      padding-left: 104px;
+    }
+
+    /* ── Header ─────────────────────────────────────────── */
+    .header {
+      padding: 28px 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-brand { display: flex; align-items: center; gap: 12px; }
+
+    .header-logo {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(96,165,250,.25);
+    }
+
+    .header-title { font-size: 19px; font-weight: 800; letter-spacing: -0.4px; }
+
+    .header-right { display: flex; align-items: center; gap: 8px; }
+
+    /* ── Month picker ────────────────────────────────────── */
+    .month-picker { position: relative; }
+
+    .month-pick-btn {
+      display: flex; align-items: center; gap: 5px;
+      padding: 6px 10px; border-radius: 10px;
+      border: 1px solid var(--border); background: var(--card);
+      color: var(--text); font-size: 12px; font-weight: 700;
+      cursor: pointer; font-family: inherit; letter-spacing: 0.2px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .month-pick-btn:hover { background: var(--card2); border-color: var(--muted); }
+    .month-pick-btn svg   { opacity: 0.5; transition: transform 0.2s; }
+    .month-pick-btn.open svg { transform: rotate(180deg); }
+
+    .month-pick-drop {
+      position: absolute; right: 0; top: calc(100% + 6px);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px; width: 200px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.18);
+      display: none; z-index: 200;
+    }
+    .month-pick-drop.open { display: block; }
+
+    .month-pick-year {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .month-pick-year span {
+      font-size: 13px; font-weight: 800; letter-spacing: 0.3px;
+    }
+    .mp-year-btn {
+      width: 26px; height: 26px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--card);
+      color: var(--text); font-size: 16px; line-height: 1;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-family: inherit; transition: background 0.15s;
+    }
+    .mp-year-btn:hover:not(:disabled) { background: var(--card2); }
+    .mp-year-btn:disabled { opacity: 0.25; cursor: default; }
+
+    .month-pick-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;
+    }
+    .mp-cell {
+      padding: 7px 4px; border-radius: 8px; border: none;
+      background: var(--card); color: var(--text);
+      font-size: 11px; font-weight: 700; cursor: pointer;
+      font-family: inherit; text-align: center;
+      transition: background 0.15s, color 0.15s;
+    }
+    .mp-cell:hover:not(:disabled):not(.active) { background: var(--card2); }
+    .mp-cell.active { background: var(--blue); color: #fff; }
+    .mp-cell:disabled { opacity: 0.25; cursor: default; }
+
+    /* ── Logout btn ──────────────────────────────────────── */
+    .logout-btn {
+      width: 32px; height: 32px; border-radius: 9px;
+      border: 1px solid var(--border); background: var(--card);
+      color: var(--muted); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.18s; flex-shrink: 0;
+    }
+    .logout-btn:hover { color: var(--red); border-color: var(--red); background: var(--red-bg); }
+
+    /* ── Overlays ─────────────────────────────────────────── */
+    .overlay {
+      position: fixed; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 400; padding: 20px;
+      background: var(--bg);
+    }
+    .overlay.hidden { display: none; }
+
+    /* Auth */
+    .auth-card {
+      width: 100%; max-width: 360px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 32px 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.5);
+    }
+    .auth-logo {
+      width: 56px; height: 56px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; margin: 0 auto 18px;
+      box-shadow: 0 4px 20px rgba(96,165,250,.3);
+    }
+    .auth-title { font-size: 20px; font-weight: 800; text-align: center; margin-bottom: 4px; letter-spacing: -0.3px; }
+    .auth-sub   { text-align: center; color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+    .auth-tabs  { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 20px; }
+    .auth-tab {
+      padding: 10px; border-radius: var(--rs);
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--muted); font-size: 13px; font-weight: 700;
+      font-family: inherit; cursor: pointer; transition: all 0.18s;
+    }
+    .auth-tab.on { background: var(--blue-bg); border-color: var(--blue); color: var(--blue); }
+    .auth-inputs { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+    .auth-error  { font-size: 12px; color: var(--red); text-align: center; min-height: 16px; margin-bottom: 8px; line-height: 1.4; }
+
+    /* Loading */
+    .loading-card { text-align: center; }
+    .loading-logo { font-size: 52px; margin-bottom: 18px; animation: pulse 2s ease-in-out infinite; }
+    .loading-msg  { font-size: 15px; font-weight: 700; color: var(--muted); margin-bottom: 24px; }
+    .spinner {
+      width: 32px; height: 32px; margin: 0 auto;
+      border: 3px solid var(--border);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin    { to { transform: rotate(360deg); } }
+    @keyframes pulse   { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.65; transform:scale(.94); } }
+
+    /* ── Right sidebar nav ───────────────────────────────── */
+    .nav {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 68px;
+      height: 100dvh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      z-index: 100;
+      padding: 24px 6px;
+    }
+
+    .nav-btn {
+      width: 100%;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 5px;
+      padding: 13px 6px;
+      cursor: pointer; border: none; background: none;
+      color: var(--dim);
+      font-size: 9px; font-weight: 700;
+      letter-spacing: 0.4px; text-transform: uppercase;
+      transition: color 0.2s, background 0.2s;
+      font-family: inherit; border-radius: 12px;
+    }
+
+    .nav-btn:hover { background: var(--card); color: var(--muted); }
+    .nav-btn svg { width: 21px; height: 21px; }
+    .nav-btn.active { color: var(--blue); background: var(--blue-bg); }
+
+    /* ── Tab panes ───────────────────────────────────────── */
+    .pane { display: none; padding: 20px 20px 0; }
+    .pane.active { display: block; }
+
+    /* ── Section title ───────────────────────────────────── */
+    .stitle {
+      font-size: 11px; font-weight: 800;
+      letter-spacing: 0.8px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 12px; margin-top: 24px;
+    }
+    .stitle:first-child { margin-top: 0; }
+
+    /* ── Summary grid ────────────────────────────────────── */
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .scard {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 16px 14px;
+      position: relative; overflow: hidden;
+    }
+
+    .scard::after {
+      content: ''; position: absolute;
+      top: 0; left: 0; width: 3px; height: 100%;
+      border-radius: 0 2px 2px 0;
+    }
+
+    .scard.usd::after { background: var(--blue); }
+    .scard.uyu::after { background: var(--orange); }
+    .scard.inc::after { background: var(--green); }
+    .scard.exp::after { background: var(--red); }
+
+    .scard-lbl {
+      font-size: 10px; font-weight: 800;
+      color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.6px; margin-bottom: 10px;
+    }
+
+    .scard-line { display: flex; align-items: baseline; gap: 5px; margin-bottom: 2px; }
+
+    .scard-val  { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; line-height: 1; }
+    .scard-curr { font-size: 9px;  font-weight: 800; letter-spacing: 0.5px; opacity: 0.55; }
+
+    .scard.usd .scard-val { color: var(--blue); }
+    .scard.uyu .scard-val { color: var(--orange); }
+    .scard.inc .scard-val { color: var(--green); }
+    .scard.exp .scard-val { color: var(--red); }
+
+    .scard-sub { font-size: 11px; color: var(--dim); margin-top: 4px; line-height: 1.4; }
+
+    /* ── Chart card ──────────────────────────────────────── */
+    .chart-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 20px;
+    }
+
+    .chart-inner  { display: flex; align-items: center; gap: 20px; }
+    .chart-legend { flex: 1; display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+
+    .leg-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+    .leg-dot  { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .leg-name { flex: 1; color: var(--muted); text-transform: capitalize; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .leg-pct  { font-size: 12px; font-weight: 800; flex-shrink: 0; }
+
+    .chart-empty { text-align: center; color: var(--dim); font-size: 13px; padding: 16px 0; }
+
+    /* ── Chart title row ─────────────────────────────────── */
+    .stitle-row {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px; margin-top: 24px;
+    }
+    .stitle-row .stitle { margin: 0; }
+
+    .mode-toggle {
+      padding: 5px 13px; border-radius: 20px;
+      border: 1px solid var(--border); background: var(--card);
+      color: var(--muted); font-size: 12px; font-weight: 800;
+      cursor: pointer; transition: all 0.18s;
+      font-family: inherit; letter-spacing: 0.3px;
+    }
+    .mode-toggle.pct { background: var(--blue-bg); border-color: var(--blue); color: var(--blue); }
+    .mode-toggle.val { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+
+    .chart-curr-header { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+    .chart-curr-header .curr-chip {
+      font-size: 11px; font-weight: 800;
+      letter-spacing: 0.5px; padding: 3px 10px; border-radius: 20px;
+    }
+    .chart-curr-header .curr-chip.usd { background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(96,165,250,.3); }
+    .chart-curr-header .curr-chip.uyu { background: var(--orange-bg); color: var(--orange); border: 1px solid rgba(251,146,60,.3); }
+
+    .chart-cards-wrap { display: flex; flex-direction: column; gap: 10px; }
+
+    /* ── Form card ───────────────────────────────────────── */
+    .form-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 20px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 7px; }
+    .field > label {
+      font-size: 10px; font-weight: 800;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px;
+    }
+
+    input, select {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--rs); color: var(--text);
+      font-size: 15px; font-family: inherit;
+      padding: 12px 14px; width: 100%; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none; appearance: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(96,165,250,.14);
+    }
+
+    input::placeholder { color: var(--dim); }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238892a4' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 38px;
+    }
+
+    .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+
+    .seg-btn {
+      padding: 11px 8px; border-radius: var(--rs);
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--muted); font-size: 13px; font-weight: 700;
+      font-family: inherit; cursor: pointer; text-align: center;
+      transition: all 0.18s; line-height: 1;
+    }
+
+    .seg-btn.income.on  { background: var(--green-bg);  border-color: var(--green);  color: var(--green); }
+    .seg-btn.expense.on { background: var(--red-bg);    border-color: var(--red);    color: var(--red); }
+    .seg-btn.USD.on     { background: var(--blue-bg);   border-color: var(--blue);   color: var(--blue); }
+    .seg-btn.UYU.on     { background: var(--orange-bg); border-color: var(--orange); color: var(--orange); }
+
+    .submit-btn {
+      width: 100%; padding: 14px; border-radius: var(--rs); border: none;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: #fff; font-size: 15px; font-weight: 800; font-family: inherit;
+      cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+      letter-spacing: 0.1px; box-shadow: 0 4px 14px rgba(96,165,250,.22);
+    }
+    .submit-btn:hover  { opacity: 0.9; }
+    .submit-btn:active { transform: scale(0.99); opacity: 0.82; }
+
+    /* ── Filters ─────────────────────────────────────────── */
+    .filters { display: flex; gap: 8px; margin-bottom: 12px; }
+
+    .f-pill {
+      padding: 6px 15px; border-radius: 20px;
+      border: 1px solid var(--border); background: var(--card);
+      color: var(--muted); font-size: 12px; font-weight: 700;
+      font-family: inherit; cursor: pointer; transition: all 0.18s;
+    }
+    .f-pill.on { background: var(--blue-bg); border-color: var(--blue); color: var(--blue); }
+
+    /* ── Transaction list ────────────────────────────────── */
+    .tx-list { display: flex; flex-direction: column; gap: 8px; padding-bottom: 8px; }
+
+    .tx-item {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 13px 14px;
+      display: flex; align-items: center; gap: 12px;
+    }
+
+    .tx-ico {
+      width: 40px; height: 40px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 19px; flex-shrink: 0;
+    }
+    .tx-ico.income  { background: var(--green-bg); }
+    .tx-ico.expense { background: var(--red-bg); }
+
+    .tx-body { flex: 1; min-width: 0; }
+    .tx-cat  { font-size: 13px; font-weight: 700; text-transform: capitalize; }
+    .tx-note { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+    .tx-date { font-size: 11px; color: var(--dim); margin-top: 2px; }
+
+    .tx-right { text-align: right; flex-shrink: 0; }
+    .tx-amt   { font-size: 15px; font-weight: 800; }
+    .tx-amt.income  { color: var(--green); }
+    .tx-amt.expense { color: var(--red); }
+    .tx-curr-tag { font-size: 9px; font-weight: 800; color: var(--dim); letter-spacing: 0.4px; margin-top: 2px; }
+
+    .tx-del {
+      border: none; background: none; color: var(--dim);
+      cursor: pointer; padding: 6px; border-radius: 8px;
+      display: flex; align-items: center;
+      transition: color 0.2s, background 0.2s; flex-shrink: 0;
+    }
+    .tx-del:hover { color: var(--red); background: var(--red-bg); }
+
+    .tx-empty     { text-align: center; color: var(--dim); padding: 48px 20px; font-size: 13px; }
+    .tx-empty-ico { font-size: 42px; margin-bottom: 10px; }
+
+    /* ── Category list ───────────────────────────────────── */
+    .cat-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .cat-item {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 13px 14px;
+      display: flex; align-items: center; gap: 12px;
+    }
+
+    .cat-ico-wrap {
+      width: 40px; height: 40px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+
+    .cat-name-lbl { flex: 1; font-size: 13px; font-weight: 700; text-transform: capitalize; letter-spacing: 0.1px; }
+
+    .cat-del-btn {
+      border: none; background: none; color: var(--dim);
+      cursor: pointer; padding: 6px; border-radius: 8px;
+      display: flex; align-items: center;
+      transition: color 0.2s, background 0.2s; flex-shrink: 0;
+    }
+    .cat-del-btn:hover { color: var(--red); background: var(--red-bg); }
+
+    /* ── Emoji picker ────────────────────────────────────── */
+    .emoji-pick-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+
+    .emoji-preview {
+      width: 52px; height: 52px; border-radius: 13px;
+      background: var(--surface); border: 2px dashed var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; flex-shrink: 0; transition: all 0.2s;
+    }
+    .emoji-preview.has-val { border-style: solid; border-color: var(--blue); background: var(--blue-bg); }
+    .emoji-preview[data-empty]::before { content: '+'; font-size: 22px; color: var(--dim); font-weight: 300; }
+
+    .emoji-pick-hint { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(42px, 1fr));
+      gap: 5px; max-height: 210px; overflow-y: auto; padding: 1px;
+    }
+
+    .emoji-btn {
+      height: 42px; border-radius: 9px;
+      border: 1px solid var(--border); background: var(--surface);
+      font-size: 21px; cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+      display: flex; align-items: center; justify-content: center;
+      line-height: 1; padding: 0;
+    }
+    .emoji-btn:hover { background: var(--card2); border-color: var(--muted); }
+    .emoji-btn.sel {
+      background: var(--blue-bg); border-color: var(--blue);
+      box-shadow: 0 0 0 2px rgba(96,165,250,.2);
+      transform: scale(1.08);
+    }
+
+    /* ── Toast ───────────────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      background: var(--card2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 10px 20px;
+      font-size: 13px; font-weight: 600;
+      opacity: 0; transition: opacity 0.25s, transform 0.25s;
+      z-index: 200; pointer-events: none;
+      white-space: nowrap; box-shadow: 0 8px 30px rgba(0,0,0,.4);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── Backup ──────────────────────────────────────────── */
+    .backup-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 18px 18px 20px;
+    }
+    .backup-info { font-size: 12px; color: var(--muted); line-height: 1.7; margin-bottom: 14px; }
+    .backup-stat { display: inline-block; font-weight: 700; color: var(--text); }
+    .backup-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .backup-btn {
+      padding: 13px 8px; border-radius: var(--rs); border: 1px solid;
+      font-size: 13px; font-weight: 700; font-family: inherit;
+      cursor: pointer; transition: opacity 0.18s; text-align: center;
+    }
+    .backup-btn:hover { opacity: 0.8; }
+    .backup-btn.exp { background: var(--blue-bg);  border-color: var(--blue);  color: var(--blue); }
+    .backup-btn.imp { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+
+    /* ── Debt tracker ────────────────────────────────────── */
+    .debt-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .debt-list    { display: flex; flex-direction: column; gap: 10px; padding-bottom: 8px; }
+
+    .debt-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 16px; transition: border-color 0.2s;
+    }
+    .debt-card.overdue { border-color: rgba(248,113,113,.45); }
+    .debt-card.paid    { opacity: 0.5; }
+
+    .debt-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+    .debt-entity { font-size: 14px; font-weight: 700; }
+    .debt-note   { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .debt-due    { font-size: 11px; color: var(--dim); margin-top: 4px; font-weight: 600; }
+    .debt-due.over { color: var(--red); }
+
+    .debt-meta { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+    .debt-curr-tag { font-size: 10px; font-weight: 800; letter-spacing: 0.4px; padding: 2px 8px; border-radius: 6px; }
+    .debt-curr-tag.USD { background: var(--blue-bg);   color: var(--blue); }
+    .debt-curr-tag.UYU { background: var(--orange-bg); color: var(--orange); }
+
+    .debt-del-btn {
+      border: none; background: none; color: var(--dim);
+      cursor: pointer; padding: 4px; border-radius: 6px;
+      display: flex; align-items: center; transition: color 0.2s, background 0.2s;
+    }
+    .debt-del-btn:hover { color: var(--red); background: var(--red-bg); }
+
+    .debt-progress-bar { height: 5px; border-radius: 3px; background: var(--surface); overflow: hidden; margin: 8px 0 6px; }
+    .debt-progress-fill {
+      height: 100%; border-radius: 3px;
+      background: linear-gradient(90deg, var(--blue), var(--purple)); transition: width 0.4s;
+    }
+    .debt-progress-fill.done { background: var(--green); }
+
+    .debt-amounts { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+    .debt-remaining { color: var(--text); font-weight: 800; }
+    .debt-actions   { display: flex; gap: 7px; margin-top: 12px; }
+
+    .debt-action-btn {
+      flex: 1; padding: 9px 8px; border-radius: var(--rs);
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--muted); font-size: 12px; font-weight: 700;
+      font-family: inherit; cursor: pointer; transition: all 0.18s; text-align: center;
+    }
+    .debt-action-btn.pay  { background: var(--blue-bg);  border-color: var(--blue);  color: var(--blue); }
+    .debt-action-btn.done { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+
+    .abono-form {
+      margin-top: 12px; padding-top: 12px;
+      border-top: 1px solid var(--border);
+      display: flex; gap: 8px; align-items: center;
+    }
+    .abono-form input { flex: 1; }
+
+    .abono-confirm {
+      padding: 11px 16px; border-radius: var(--rs); border: none;
+      background: var(--blue); color: #fff; font-size: 13px;
+      font-weight: 700; font-family: inherit; cursor: pointer;
+      white-space: nowrap; flex-shrink: 0; transition: opacity 0.18s;
+    }
+    .abono-confirm:hover { opacity: 0.85; }
+
+    .debt-paid-badge { margin-top: 10px; font-size: 12px; color: var(--green); font-weight: 700; }
+
+    input[type="date"] { color-scheme: dark; }
+
+    /* ── Stats ───────────────────────────────────────────── */
+    .cards-2  { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .col-list { display: flex; flex-direction: column; }
+
+    /* ── Account pills ───────────────────────────────────── */
+    .acc-pills {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px;
+    }
+    .acc-pill {
+      padding: 6px 13px; border-radius: 20px; border: 1px solid var(--border);
+      background: var(--card); color: var(--muted);
+      font-size: 11px; font-weight: 700; cursor: pointer;
+      font-family: inherit; letter-spacing: 0.2px;
+      transition: all 0.15s;
+    }
+    .acc-pill:hover  { border-color: var(--muted); color: var(--text); }
+    .acc-pill.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .acc-pill .pill-cur { opacity: 0.7; font-size: 10px; margin-left: 4px; }
+
+    /* ── Priority debt widget ─────────────────────────────── */
+    .prio-debt-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 15px 16px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .prio-debt-header { display: flex; align-items: center; gap: 10px; }
+    .prio-debt-icon   { font-size: 20px; }
+    .prio-debt-name   { font-size: 14px; font-weight: 800; flex: 1; }
+    .prio-debt-badge  {
+      font-size: 10px; font-weight: 700; padding: 3px 8px;
+      border-radius: 20px; background: var(--red); color: #fff;
+    }
+    .prio-debt-badge.ok { background: var(--orange); }
+    .prio-debt-amounts  { display: flex; gap: 12px; align-items: baseline; }
+    .prio-debt-rem  { font-size: 20px; font-weight: 900; color: var(--red); }
+    .prio-debt-of   { font-size: 12px; color: var(--dim); }
+    .prio-debt-plan {
+      background: var(--bg); border-radius: 10px; padding: 10px 12px;
+      display: flex; gap: 14px;
+    }
+    .prio-plan-item { display: flex; flex-direction: column; gap: 2px; }
+    .prio-plan-lbl  { font-size: 9px; font-weight: 700; color: var(--dim); letter-spacing: .5px; text-transform: uppercase; }
+    .prio-plan-val  { font-size: 13px; font-weight: 800; color: var(--text); }
+    .prio-debt-bar-wrap  { height: 5px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .prio-debt-bar-fill  { height: 100%; background: var(--red); border-radius: 99px; }
+
+    /* ── Account pills ── add-tx button ─────────────────────── */
+    .pill-wrap { display: flex; align-items: center; gap: 4px; }
+    .pill-add  {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 1.5px solid currentColor; background: none;
+      color: inherit; font-size: 14px; line-height: 1;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-family: inherit; opacity: 0.7; flex-shrink: 0;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .pill-add:hover { opacity: 1; transform: scale(1.15); }
+    .acc-pill.active .pill-add { border-color: #fff; color: #fff; }
+
+    /* ── Color swatches ──────────────────────────────────────── */
+    .color-swatches { display: flex; gap: 6px; flex-wrap: wrap; }
+    .color-swatch {
+      width: 22px; height: 22px; border-radius: 50%; cursor: pointer;
+      border: 2px solid transparent; transition: transform 0.15s, border-color 0.15s;
+    }
+    .color-swatch:hover    { transform: scale(1.2); }
+    .color-swatch.selected { border-color: var(--text); transform: scale(1.15); }
+
+    /* ── Emoji input ─────────────────────────────────────────── */
+    .emoji-inp {
+      width: 46px; height: 40px; border-radius: var(--rs);
+      border: 1px solid var(--border); background: var(--card);
+      font-size: 22px; text-align: center; cursor: pointer;
+      font-family: inherit; color: var(--text);
+    }
+
+    /* ── Cuentas list ─────────────────────────────────────── */
+    .acc-item {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 14px 16px;
+      display: flex; align-items: center; gap: 12px;
+      flex-wrap: wrap;
+    }
+    .acc-item-icon {
+      width: 38px; height: 38px; border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0; cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .acc-item-icon:hover { transform: scale(1.12); }
+    .acc-item-name  { font-size: 13px; font-weight: 700; }
+    .acc-item-bal   { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .acc-item-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+    .acc-item-total { font-size: 16px; font-weight: 900; }
+
+    .acc-edit-panel {
+      width: 100%; padding-top: 12px; border-top: 1px solid var(--border);
+      margin-top: 4px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .acc-edit-row { display: flex; align-items: center; gap: 10px; }
+    .acc-edit-lbl { font-size: 11px; font-weight: 700; color: var(--dim); width: 44px; flex-shrink: 0; }
+    .acc-save-btn {
+      padding: 6px 14px; border-radius: var(--rs); border: none;
+      background: var(--blue); color: #fff; font-size: 12px; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+    }
+
+    /* ── Stats bar chart ─────────────────────────────────── */
+    .bar-chart {
+      display: flex; align-items: flex-end; gap: 6px;
+      padding: 0 2px;
+    }
+
+    .bar-group {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center;
+    }
+
+    .bar-group-bars {
+      display: flex; gap: 3px;
+      align-items: flex-end; width: 100%; justify-content: center;
+    }
+
+    .bar {
+      width: 10px; border-radius: 3px 3px 0 0; min-height: 3px;
+      transition: height 0.4s ease;
+    }
+
+    .bar.income  { background: var(--green); opacity: 0.9; }
+    .bar.expense { background: var(--red);   opacity: 0.9; }
+
+    .bar-label {
+      font-size: 9px; color: var(--dim); font-weight: 700;
+      margin-top: 6px; text-align: center;
+    }
+
+    .bar-legend {
+      display: flex; gap: 16px; margin-top: 14px;
+      font-size: 11px; color: var(--muted); justify-content: center;
+    }
+
+    .bar-dot {
+      display: inline-block; width: 7px; height: 7px;
+      border-radius: 50%; margin-right: 5px; vertical-align: middle;
+    }
+
+    .top-cat-item {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 13px 14px;
+      display: flex; align-items: center; gap: 12px;
+    }
+
+    .top-cat-amounts { text-align: right; }
+    .top-cat-amt     { font-size: 13px; font-weight: 800; color: var(--red); }
+    .top-cat-amt.usd { color: var(--blue); }
+
+    /* ── Scrollbar ───────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<!-- ── Loading Overlay ─────────────────────────────────────── -->
+<div id="loadingOverlay" class="overlay">
+  <div class="loading-card">
+    <div class="loading-logo">💰</div>
+    <div class="loading-msg" id="loadingMsg">Cargando...</div>
+    <div class="spinner"></div>
+  </div>
+</div>
+
+<!-- ── Auth Overlay ────────────────────────────────────────── -->
+<div id="authOverlay" class="overlay hidden">
+  <div class="auth-card">
+    <div class="auth-logo">💰</div>
+    <div class="auth-title">Finanzas Personales</div>
+    <div class="auth-sub">Tu dinero, siempre sincronizado</div>
+    <div class="auth-tabs">
+      <button class="auth-tab on" id="tabLogin"    onclick="switchAuthMode('login')">Iniciar sesión</button>
+      <button class="auth-tab"    id="tabRegister" onclick="switchAuthMode('register')">Registrarse</button>
+    </div>
+    <div class="auth-inputs">
+      <input type="email"    id="authEmail" placeholder="Email" autocomplete="email" inputmode="email">
+      <input type="password" id="authPass"  placeholder="Contraseña" autocomplete="current-password">
+      <input type="password" id="authPass2" placeholder="Confirmar contraseña" autocomplete="new-password" style="display:none">
+    </div>
+    <div class="auth-error" id="authError"></div>
+    <button class="submit-btn" id="authBtn" onclick="authSubmit()">Iniciar sesión</button>
+  </div>
+</div>
+
+<!-- ── Header ──────────────────────────────────────────────── -->
+<div class="header">
+  <div class="header-brand">
+    <div class="header-title" id="pageTitle">General</div>
+  </div>
+  <div class="header-right">
+    <div class="month-picker" id="monthPicker">
+      <button class="month-pick-btn" id="monthPickBtn" onclick="toggleMonthPicker(event)">
+        <span id="hMonth"></span>
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="month-pick-drop" id="monthPickDrop">
+        <div class="month-pick-year">
+          <button class="mp-year-btn" id="mpPrevYearBtn" onclick="pickerShiftYear(-1)">‹</button>
+          <span id="pickerYearLabel"></span>
+          <button class="mp-year-btn" id="mpNextYearBtn" onclick="pickerShiftYear(1)">›</button>
+        </div>
+        <div class="month-pick-grid" id="monthPickGrid"></div>
+      </div>
+    </div>
+    <button class="logout-btn" id="logoutBtn" onclick="logout()" title="Cerrar sesión" style="display:none">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- ── Pane: Inicio ────────────────────────────────────────── -->
+<div class="pane active" id="pane-inicio">
+
+  <div class="acc-pills" id="accPills"></div>
+
+  <div class="stitle">Resumen del mes</div>
+  <div class="summary-grid">
+    <div class="scard usd" id="balUSD-card">
+      <div class="scard-lbl" id="balUSD-lbl">Balance USD</div>
+      <div class="scard-line"><span class="scard-val" id="balUSD">$0.00</span></div>
+      <div class="scard-sub" id="balUSD-sub">Dólares</div>
+    </div>
+    <div class="scard uyu" id="balUYU-card">
+      <div class="scard-lbl" id="balUYU-lbl">Balance UYU</div>
+      <div class="scard-line"><span class="scard-val" id="balUYU">$0</span></div>
+      <div class="scard-sub" id="balUYU-sub">Pesos uru.</div>
+    </div>
+    <div class="scard inc">
+      <div class="scard-lbl">Ingresos</div>
+      <div id="incLines"></div>
+    </div>
+    <div class="scard exp">
+      <div class="scard-lbl">Gastos</div>
+      <div id="expLines"></div>
+    </div>
+  </div>
+
+  <div class="stitle-row">
+    <span class="stitle">Gastos por categoría</span>
+    <button class="mode-toggle pct" id="chartModeBtn" onclick="toggleChartMode()">%</button>
+  </div>
+
+  <div class="chart-cards-wrap">
+    <div class="chart-card" id="chartNoData">
+      <div class="chart-empty">Sin gastos registrados este mes</div>
+    </div>
+
+    <div class="chart-card" id="chartUSDCard" style="display:none">
+      <div class="chart-curr-header"><span class="curr-chip usd">🇺🇸 USD</span></div>
+      <div class="chart-inner" id="chartInnerUSD">
+        <canvas id="donutUSD" width="130" height="130" style="flex-shrink:0"></canvas>
+        <div class="chart-legend" id="legendUSD"></div>
+      </div>
+    </div>
+
+    <div class="chart-card" id="chartUYUCard" style="display:none">
+      <div class="chart-curr-header"><span class="curr-chip uyu">🇺🇾 UYU</span></div>
+      <div class="chart-inner" id="chartInnerUYU">
+        <canvas id="donutUYU" width="130" height="130" style="flex-shrink:0"></canvas>
+        <div class="chart-legend" id="legendUYU"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="priodebtSection" style="display:none">
+    <div class="stitle" style="margin-top:20px">Deuda prioritaria</div>
+    <div id="priodebtContent"></div>
+  </div>
+
+</div>
+
+<!-- ── Pane: Transacciones ─────────────────────────────────── -->
+<div class="pane" id="pane-tx">
+
+  <div class="stitle">Nueva transacción</div>
+  <div class="form-card">
+
+    <div class="field">
+      <label>Tipo</label>
+      <div class="seg">
+        <button class="seg-btn expense on" id="btn-expense" onclick="setType('expense')">↓ Gasto</button>
+        <button class="seg-btn income"     id="btn-income"  onclick="setType('income')">↑ Ingreso</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Moneda</label>
+      <div class="seg">
+        <button class="seg-btn USD on" id="btn-USD" onclick="setCurr('USD')">🇺🇸 USD</button>
+        <button class="seg-btn UYU"    id="btn-UYU" onclick="setCurr('UYU')">🇺🇾 UYU</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Monto</label>
+      <input type="number" id="amtInp" placeholder="0.00" min="0.01" step="any" inputmode="decimal">
+    </div>
+
+    <div class="field">
+      <label>Categoría</label>
+      <select id="catSel"></select>
+    </div>
+
+    <div class="field">
+      <label>Nota <span style="text-transform:none;font-weight:400;letter-spacing:0">(opcional)</span></label>
+      <input type="text" id="noteInp" placeholder="Descripción breve..." maxlength="80">
+    </div>
+
+    <button class="submit-btn" onclick="addTx()">Agregar transacción</button>
+
+  </div>
+
+  <div class="stitle">Historial del mes</div>
+  <div class="filters">
+    <button class="f-pill on" onclick="setFilter('all',this)">Todos</button>
+    <button class="f-pill"    onclick="setFilter('expense',this)">Gastos</button>
+    <button class="f-pill"    onclick="setFilter('income',this)">Ingresos</button>
+  </div>
+  <div class="tx-list" id="txList"></div>
+
+</div>
+
+<!-- ── Pane: Categorías ────────────────────────────────────── -->
+<div class="pane" id="pane-cats">
+
+  <div class="stitle">Mis categorías</div>
+  <div class="cat-list" id="catList"></div>
+
+  <div class="stitle">Nueva categoría</div>
+  <div class="form-card">
+
+    <div class="field">
+      <label>Ícono</label>
+      <div class="emoji-pick-header">
+        <div class="emoji-preview" id="emojiPreview" data-empty></div>
+        <div class="emoji-pick-hint">Tocá un ícono<br>de la lista para elegirlo</div>
+      </div>
+      <div class="emoji-grid" id="emojiGrid"></div>
+    </div>
+
+    <div class="field">
+      <label>Nombre</label>
+      <input type="text" id="catNameInp" placeholder="ej: suscripciones" maxlength="24">
+    </div>
+
+    <button class="submit-btn" onclick="addCat()">Crear categoría</button>
+
+  </div>
+
+  <div class="stitle">Respaldo de datos</div>
+  <div class="backup-card">
+    <p class="backup-info">
+      Tus datos están guardados en la nube y sincronizados entre dispositivos.<br>
+      Podés exportar un archivo local como respaldo adicional o para importar datos de otra cuenta.<br><br>
+      <span class="backup-stat" id="backupStat"></span>
+    </p>
+    <div class="backup-btns">
+      <button class="backup-btn exp" onclick="exportData()">⬇ Exportar JSON</button>
+      <button class="backup-btn imp" onclick="importData()">⬆ Importar JSON</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Pane: Deudas ────────────────────────────────────────── -->
+<div class="pane" id="pane-deudas">
+
+  <div class="stitle">Total pendiente</div>
+  <div class="debt-summary" id="debtSummary">
+    <div class="scard" id="debtCardUSD" style="display:none">
+      <div class="scard-lbl">Pendiente USD</div>
+      <div class="scard-line"><span class="scard-val" id="debtTotUSD" style="color:var(--red)">$0.00</span></div>
+      <div class="scard-sub">Dólares</div>
+    </div>
+    <div class="scard" id="debtCardUYU" style="display:none">
+      <div class="scard-lbl">Pendiente UYU</div>
+      <div class="scard-line"><span class="scard-val" id="debtTotUYU" style="color:var(--red)">$0</span></div>
+      <div class="scard-sub">Pesos uru.</div>
+    </div>
+    <div class="scard" id="debtCardNone" style="grid-column:1/-1">
+      <div class="scard-lbl">Sin deudas activas</div>
+      <div class="scard-val" style="color:var(--green);font-size:26px;margin-top:4px">🎉</div>
+    </div>
+  </div>
+
+  <div class="stitle">Mis deudas</div>
+  <div class="filters">
+    <button class="f-pill on" onclick="setDebtFilter('active',this)">Activas</button>
+    <button class="f-pill"    onclick="setDebtFilter('paid',this)">Saldadas</button>
+  </div>
+  <div class="debt-list" id="debtList"></div>
+
+  <div class="stitle">Nueva deuda</div>
+  <div class="form-card">
+
+    <div class="field">
+      <label>Persona o entidad</label>
+      <input type="text" id="debtEntity" placeholder="ej: Banco Itaú, Juan..." maxlength="50">
+    </div>
+
+    <div class="field">
+      <label>Moneda</label>
+      <div class="seg">
+        <button class="seg-btn USD"    id="dBtn-USD" onclick="setDebtCurr('USD')">🇺🇸 USD</button>
+        <button class="seg-btn UYU on" id="dBtn-UYU" onclick="setDebtCurr('UYU')">🇺🇾 UYU</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Monto total</label>
+      <input type="number" id="debtAmt" placeholder="0.00" min="0.01" step="any" inputmode="decimal">
+    </div>
+
+    <div class="field">
+      <label>Vencimiento <span style="text-transform:none;font-weight:400;letter-spacing:0">(opcional)</span></label>
+      <input type="date" id="debtDue">
+    </div>
+
+    <div class="field">
+      <label>Nota <span style="text-transform:none;font-weight:400;letter-spacing:0">(opcional)</span></label>
+      <input type="text" id="debtNote" placeholder="Concepto de la deuda..." maxlength="80">
+    </div>
+
+    <button class="submit-btn" onclick="addDebt()">Agregar deuda</button>
+
+  </div>
+
+</div>
+
+<!-- ── Pane: Estadísticas ─────────────────────────────────── -->
+<div class="pane" id="pane-stats">
+
+  <div class="stitle">Totales históricos</div>
+  <div class="cards-2" id="stats-totals-usd"></div>
+  <div class="cards-2" id="stats-totals-uyu" style="margin-top:8px"></div>
+
+  <div class="stitle" style="margin-top:20px">Tendencia mensual — USD</div>
+  <div class="card" style="padding:18px 16px">
+    <div class="bar-chart" id="bar-chart-usd"></div>
+    <div class="bar-legend">
+      <span><span class="bar-dot" style="background:var(--green)"></span>Ingresos</span>
+      <span><span class="bar-dot" style="background:var(--red)"></span>Gastos</span>
+    </div>
+  </div>
+
+  <div class="stitle" style="margin-top:20px">Tendencia mensual — UYU</div>
+  <div class="card" style="padding:18px 16px">
+    <div class="bar-chart" id="bar-chart-uyu"></div>
+    <div class="bar-legend">
+      <span><span class="bar-dot" style="background:var(--green)"></span>Ingresos</span>
+      <span><span class="bar-dot" style="background:var(--red)"></span>Gastos</span>
+    </div>
+  </div>
+
+  <div class="stitle" style="margin-top:20px">Top categorías (gastos)</div>
+  <div class="col-list" id="stats-top-cats" style="gap:6px"></div>
+
+</div>
+
+<!-- ── Pane: Cuentas ─────────────────────────────────────── -->
+<div class="pane" id="pane-cuentas">
+
+  <div class="stitle">Nueva cuenta</div>
+  <div class="form-card">
+    <div class="form-row">
+      <input class="inp" id="accName" placeholder="Nombre (ej. BROU, Itaú)" maxlength="40">
+    </div>
+    <div class="form-row">
+      <div class="color-swatches" id="accColorSwatches"></div>
+    </div>
+    <div class="form-row" style="display:flex;gap:8px;align-items:center">
+      <div class="seg" style="flex:1" id="accCurrSeg">
+        <button class="seg-btn USD on" onclick="setAccCurr('USD',this)">🇺🇸 USD</button>
+        <button class="seg-btn UYU"    onclick="setAccCurr('UYU',this)">🇺🇾 UYU</button>
+      </div>
+    </div>
+    <div class="form-row">
+      <input class="inp" id="accInitBal" type="number" step="0.01" placeholder="Saldo">
+    </div>
+    <button class="submit-btn" onclick="addAccount()">Agregar cuenta</button>
+  </div>
+
+  <div class="stitle" style="margin-top:20px">Mis cuentas</div>
+  <div class="col-list" id="accList" style="gap:8px"></div>
+
+</div>
+
+<!-- ── Bottom nav ──────────────────────────────────────────── -->
+<nav class="nav">
+  <button class="nav-btn active" onclick="showTab('inicio',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+      <polyline points="9 22 9 12 15 12 15 22"/>
+    </svg>
+    General
+  </button>
+  <button class="nav-btn" onclick="showTab('tx',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"/>
+      <line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+    Movim.
+  </button>
+  <button class="nav-btn" onclick="showTab('cats',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
+      <line x1="7" y1="7" x2="7.01" y2="7"/>
+    </svg>
+    Categ.
+  </button>
+  <button class="nav-btn" onclick="showTab('deudas',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+      <line x1="1" y1="10" x2="23" y2="10"/>
+    </svg>
+    Deudas
+  </button>
+  <button class="nav-btn" onclick="showTab('stats',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="20" x2="18" y2="10"/>
+      <line x1="12" y1="20" x2="12" y2="4"/>
+      <line x1="6"  y1="20" x2="6"  y2="14"/>
+    </svg>
+    Estad.
+  </button>
+  <button class="nav-btn" onclick="showTab('cuentas',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="6" width="18" height="13" rx="2"/>
+      <path d="M3 10h18"/>
+      <circle cx="7" cy="14.5" r="1" fill="currentColor" stroke="none"/>
+      <circle cx="11" cy="14.5" r="1" fill="currentColor" stroke="none"/>
+    </svg>
+    Cuentas
+  </button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<!-- ── Firebase SDK ────────────────────────────────────────── -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════════════════════
+//  🔥 CONFIGURACIÓN FIREBASE
+//  Seguí los pasos de la guía y pegá tu config aquí abajo
+// ══════════════════════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyBGCpRmIx6hZ-uCPevSbayGMlkR3D6y_Uc",
+  authDomain: "finanzas-personales-7b3ea.firebaseapp.com",
+  projectId: "finanzas-personales-7b3ea",
+  storageBucket: "finanzas-personales-7b3ea.firebasestorage.app",
+  messagingSenderId: "369862244907",
+  appId: "1:369862244907:web:a4d0fe20461fb1a47ec86e"
+};
+// ══════════════════════════════════════════════════════════════
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+db.enablePersistence().catch(() => {});
+
+// ── Category system ────────────────────────────────────────
+const DEFAULT_CATS = [
+  { id: 'comida',     name: 'comida',     icon: '🍔', isDefault: true },
+  { id: 'transporte', name: 'transporte', icon: '🚗', isDefault: true },
+  { id: 'salud',      name: 'salud',      icon: '🏥', isDefault: true },
+  { id: 'casa',       name: 'casa',       icon: '🏠', isDefault: true },
+  { id: 'ocio',       name: 'ocio',       icon: '🎮', isDefault: true },
+  { id: 'trabajo',    name: 'trabajo',    icon: '💼', isDefault: true },
+  { id: 'otro',       name: 'otro',       icon: '📦', isDefault: true },
+  { id: 'deuda',      name: 'deuda',      icon: '💸', isDefault: true },
+];
+
+const PALETTE = [
+  '#60a5fa','#4ade80','#fb923c','#f87171','#a78bfa',
+  '#fbbf24','#2dd4bf','#f472b6','#a3e635','#38bdf8',
+  '#e879f9','#34d399','#facc15','#818cf8','#fb7185',
+];
+
+const EMOJI_LIST = [
+  '🍔','🍕','🌮','🍜','🍣','🥗','🍰','🎂','☕','🧋','🍺','🍷','🧃','🥩','🫕','🥘',
+  '🚗','🚕','🚌','🛵','🚲','✈️','🚂','⛽','🛺','🚙','🛻','🚐',
+  '🏠','🏡','🏢','💡','🔧','🔨','🧹','🔑','🛁','🛋️','🪴','🧰',
+  '💊','🏥','💄','👗','👟','🏋️','🧘','💆','🧴','🩺','🦷','🩹',
+  '🎮','🎬','🎵','🎸','🎹','📚','🎯','⚽','🏀','🎨','🏖️','🎭','🧩','🎲',
+  '💻','📱','💼','📊','⌨️','🖥️','📋','📁','🖨️','📡','🎧',
+  '🛒','🛍️','👔','💍','🎁','🧦','👜','🕶️','⌚','👒',
+  '💰','💳','📈','🪙','🏦','💵','📉','🤑',
+  '📦','🐾','🌱','🎓','🚀','🌍','❤️','⭐','🔮','🌈','🎪','🌙','☀️','🏔️',
+];
+
+// ── State ──────────────────────────────────────────────────
+let txs            = [];
+let customCats     = [];
+let hiddenDefaults = [];
+let debts          = [];
+let accounts       = [];
+let selAccountId   = null;
+let selAccCurr     = 'USD';
+let selType        = 'expense';
+let selCurr        = 'USD';
+let selFilter      = 'all';
+let selEmoji       = '';
+let chartMode      = 'pct';
+let viewMonth      = new Date().getMonth();
+let viewYear       = new Date().getFullYear();
+let selDebtCurr    = 'UYU';
+let selDebtFilter  = 'active';
+
+// Firebase state
+let currentUser        = null;
+let appReady           = false;
+const loadedCols       = new Set();
+let firestoreListeners = [];
+
+// ── Category helpers ───────────────────────────────────────
+function getCats() {
+  return [
+    ...DEFAULT_CATS.filter(c => !hiddenDefaults.includes(c.id)),
+    ...customCats,
+  ];
+}
+
+function getCatById(id) { return getCats().find(c => c.id === id); }
+function getCatIcon(id) { const c = getCatById(id); return c ? c.icon : '📦'; }
+function getCatName(id) { const c = getCatById(id); return c ? c.name : id; }
+
+function getCatColor(id) {
+  const idx = getCats().findIndex(c => c.id === id);
+  return idx >= 0 ? PALETTE[idx % PALETTE.length] : '#64748b';
+}
+
+// ── Formatters ─────────────────────────────────────────────
+function fmtUSD(v) {
+  const s = v < 0 ? '-' : '';
+  return s + '$' + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function fmtUYU(v) {
+  const s = v < 0 ? '-' : '';
+  return s + '$' + Math.round(Math.abs(v)).toLocaleString('es');
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function cap(s) {
+  return String(s).charAt(0).toUpperCase() + String(s).slice(1);
+}
+
+// ── Overlay helpers ────────────────────────────────────────
+function showLoading(msg) {
+  document.getElementById('loadingMsg').textContent = msg || 'Cargando...';
+  document.getElementById('loadingOverlay').classList.remove('hidden');
+}
+
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.add('hidden');
+}
+
+function showAuth() {
+  document.getElementById('authError').textContent = '';
+  document.getElementById('authEmail').value = '';
+  document.getElementById('authPass').value  = '';
+  document.getElementById('authPass2').value = '';
+  document.getElementById('authOverlay').classList.remove('hidden');
+}
+
+function hideAuth() {
+  document.getElementById('authOverlay').classList.add('hidden');
+}
+
+// ── Auth ───────────────────────────────────────────────────
+let authMode = 'login';
+
+function switchAuthMode(mode) {
+  authMode = mode;
+  document.getElementById('tabLogin').classList.toggle('on', mode === 'login');
+  document.getElementById('tabRegister').classList.toggle('on', mode === 'register');
+  document.getElementById('authPass2').style.display = mode === 'register' ? '' : 'none';
+  document.getElementById('authBtn').textContent = mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta';
+  document.getElementById('authError').textContent = '';
+}
+
+function getAuthErr(code) {
+  const map = {
+    'auth/email-already-in-use':    'Ese email ya está registrado',
+    'auth/invalid-email':            'Email inválido',
+    'auth/weak-password':            'La contraseña debe tener al menos 6 caracteres',
+    'auth/user-not-found':           'No encontramos esa cuenta',
+    'auth/wrong-password':           'Contraseña incorrecta',
+    'auth/invalid-credential':       'Email o contraseña incorrectos',
+    'auth/too-many-requests':        'Demasiados intentos. Esperá unos minutos',
+    'auth/network-request-failed':   'Error de conexión. Verificá tu internet',
+    'auth/invalid-api-key':          'API key inválida — revisá FIREBASE_CONFIG',
+    'auth/operation-not-allowed':    'Autenticación por email no está activada en Firebase Console',
+    'auth/configuration-not-found':  'Proyecto Firebase no encontrado — revisá projectId',
+    'auth/api-key-not-valid':        'API key inválida — revisá FIREBASE_CONFIG',
+    'auth/app-not-authorized':       'App no autorizada — revisá authDomain en Firebase Console',
+  };
+  return map[code] || ('Error: ' + code);
+}
+
+async function authSubmit() {
+  const email = document.getElementById('authEmail').value.trim();
+  const pass  = document.getElementById('authPass').value;
+  const pass2 = document.getElementById('authPass2').value;
+  const errEl = document.getElementById('authError');
+
+  if (!email || !pass) { errEl.textContent = 'Completá email y contraseña'; return; }
+
+  if (authMode === 'register') {
+    if (pass !== pass2) { errEl.textContent = 'Las contraseñas no coinciden'; return; }
+    if (pass.length < 6) { errEl.textContent = 'La contraseña debe tener al menos 6 caracteres'; return; }
+  }
+
+  errEl.textContent = '';
+  document.getElementById('authBtn').textContent = '...';
+  document.getElementById('authBtn').disabled = true;
+
+  try {
+    if (authMode === 'login') {
+      await auth.signInWithEmailAndPassword(email, pass);
+    } else {
+      await auth.createUserWithEmailAndPassword(email, pass);
+    }
+  } catch(e) {
+    errEl.textContent = getAuthErr(e.code);
+    document.getElementById('authBtn').textContent = authMode === 'login' ? 'Iniciar sesión' : 'Crear cuenta';
+    document.getElementById('authBtn').disabled = false;
+  }
+}
+
+function logout() {
+  if (!confirm('¿Cerrar sesión?')) return;
+  auth.signOut();
+}
+
+// ── Firestore helpers ──────────────────────────────────────
+function userBase() {
+  return db.collection('users').doc(auth.currentUser.uid);
+}
+
+// ── Firestore listeners ────────────────────────────────────
+function markLoaded(name) {
+  if (appReady) return;
+  loadedCols.add(name);
+  if (loadedCols.size < 5) return;
+  appReady = true;
+  hideLoading();
+  buildEmojiGrid();
+  buildCatSelect();
+  buildAccFormSwatches();
+  renderCatList();
+  updateMonthDisplay();
+  refresh();
+  setTimeout(checkLocalMigration, 400);
+}
+
+function startListeners(uid) {
+  appReady = false;
+  loadedCols.clear();
+  const base = db.collection('users').doc(uid);
+
+  function onFsError(err) {
+    console.error('Firestore error:', err.code, err.message);
+    hideLoading();
+    showAuth();
+    document.getElementById('authError').textContent =
+      err.code === 'permission-denied'
+        ? 'Sin permiso en Firestore. Revisá las Reglas de seguridad en Firebase Console.'
+        : err.code === 'unavailable'
+          ? 'Firestore no disponible. Verificá tu internet.'
+          : 'Error Firestore: ' + err.code;
+  }
+
+  // Timeout de 12s: si no cargó, mostrar error útil
+  const loadTimeout = setTimeout(() => {
+    if (appReady) return;
+    hideLoading();
+    showAuth();
+    document.getElementById('authError').textContent =
+      'Tiempo de espera agotado. Verificá que Firestore esté creado en Firebase Console (Paso 3 de la guía).';
+  }, 12000);
+
+  function markLoadedWithTimeout(name) {
+    markLoaded(name);
+    if (appReady) clearTimeout(loadTimeout);
+  }
+
+  firestoreListeners.push(
+    base.collection('transactions').onSnapshot(snap => {
+      txs = snap.docs.map(d => d.data())
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+      if (appReady) { renderTxList(); updateSummary(); renderChart(); updateBackupStat(); renderStats(); }
+      markLoadedWithTimeout('transactions');
+    }, onFsError)
+  );
+
+  firestoreListeners.push(
+    base.collection('categories').onSnapshot(snap => {
+      customCats = snap.docs.map(d => d.data());
+      if (appReady) { buildCatSelect(); renderCatList(); renderChart(); }
+      markLoadedWithTimeout('categories');
+    }, onFsError)
+  );
+
+  firestoreListeners.push(
+    base.collection('settings').doc('main').onSnapshot(doc => {
+      hiddenDefaults = doc.exists ? (doc.data().hiddenDefaults || []) : [];
+      if (appReady) { buildCatSelect(); renderCatList(); }
+      markLoadedWithTimeout('settings');
+    }, onFsError)
+  );
+
+  firestoreListeners.push(
+    base.collection('debts').onSnapshot(snap => {
+      debts = snap.docs.map(d => d.data())
+        .sort((a, b) => (b.id > a.id ? 1 : -1));
+      if (appReady) { updateDebtSummary(); renderDebtList(); renderPriorityDebt(); updateBackupStat(); }
+      markLoadedWithTimeout('debts');
+    }, onFsError)
+  );
+
+  firestoreListeners.push(
+    base.collection('accounts').onSnapshot(snap => {
+      accounts = snap.docs.map(d => d.data())
+        .sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1));
+      if (appReady) { renderAccountPills(); renderAccountList(); updateSummary(); renderChart(); renderStats(); }
+      markLoadedWithTimeout('accounts');
+    }, onFsError)
+  );
+}
+
+function stopListeners() {
+  firestoreListeners.forEach(u => u());
+  firestoreListeners = [];
+}
+
+// ── LocalStorage migration ─────────────────────────────────
+function checkLocalMigration() {
+  const lsTxs   = JSON.parse(localStorage.getItem('fp_txs')   || '[]');
+  const lsDebts = JSON.parse(localStorage.getItem('fp_debts') || '[]');
+  if (!lsTxs.length && !lsDebts.length) return;
+  if (!confirm(`Se encontraron ${lsTxs.length} movimientos y ${lsDebts.length} deudas guardados localmente.\n¿Querés migrarlos a la nube?\n\nEsto no borrará tus datos locales.`)) return;
+  migrateLocalData({
+    txs:            lsTxs,
+    customCats:     JSON.parse(localStorage.getItem('fp_cats')     || '[]'),
+    hiddenDefaults: JSON.parse(localStorage.getItem('fp_hidden_d') || '[]'),
+    debts:          lsDebts,
+  });
+}
+
+async function migrateLocalData(data) {
+  showLoading('Migrando datos locales...');
+  try {
+    const base = userBase();
+    const writes = [
+      ...(data.txs        || []).map(t => ({ col: 'transactions', id: String(t.id), data: t })),
+      ...(data.customCats || []).map(c => ({ col: 'categories',   id: c.id,         data: c })),
+      ...(data.debts      || []).map(d => ({ col: 'debts',        id: d.id,         data: d })),
+    ];
+
+    await base.collection('settings').doc('main')
+      .set({ hiddenDefaults: data.hiddenDefaults || [] }, { merge: true });
+
+    for (let i = 0; i < writes.length; i += 400) {
+      const chunk = writes.slice(i, i + 400);
+      const batch = db.batch();
+      chunk.forEach(w => batch.set(base.collection(w.col).doc(w.id), w.data));
+      await batch.commit();
+    }
+
+    hideLoading();
+    toast('Datos migrados a la nube ✓');
+  } catch(e) {
+    hideLoading();
+    toast('Error en migración ⚠️');
+    console.error(e);
+  }
+}
+
+// ── Tab navigation ─────────────────────────────────────────
+const TAB_TITLES = { inicio: 'General', tx: 'Movimientos', cats: 'Categorías', deudas: 'Deudas', stats: 'Estadísticas', cuentas: 'Cuentas' };
+
+function showTab(id, btn) {
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('pane-' + id).classList.add('active');
+  btn.classList.add('active');
+  document.getElementById('pageTitle').textContent = TAB_TITLES[id] || id;
+  if (id === 'cuentas') buildAccFormSwatches();
+}
+
+// ── Form controls ──────────────────────────────────────────
+function setType(t) {
+  selType = t;
+  document.getElementById('btn-expense').classList.toggle('on', t === 'expense');
+  document.getElementById('btn-income').classList.toggle('on',  t === 'income');
+}
+
+function setCurr(c) {
+  selCurr = c;
+  document.getElementById('btn-USD').classList.toggle('on', c === 'USD');
+  document.getElementById('btn-UYU').classList.toggle('on', c === 'UYU');
+}
+
+// ── Add transaction ────────────────────────────────────────
+function addTx() {
+  const raw = document.getElementById('amtInp').value;
+  const amt = parseFloat(raw);
+  if (!raw || isNaN(amt) || amt <= 0) { toast('Ingresá un monto válido ⚠️'); return; }
+
+  const tx = {
+    id:       'tx_' + Date.now(),
+    amount:   amt,
+    currency: selCurr,
+    type:     selType,
+    category: document.getElementById('catSel').value,
+    note:     document.getElementById('noteInp').value.trim(),
+    date:     new Date().toISOString()
+  };
+
+  document.getElementById('amtInp').value  = '';
+  document.getElementById('noteInp').value = '';
+  toast('Transacción agregada ✓');
+
+  userBase().collection('transactions').doc(tx.id).set(tx)
+    .catch(() => toast('Error al guardar ⚠️'));
+}
+
+// ── Delete transaction ─────────────────────────────────────
+function delTx(id) {
+  if (!confirm('¿Eliminar esta transacción?')) return;
+  toast('Eliminada');
+  userBase().collection('transactions').doc(String(id)).delete()
+    .catch(() => toast('Error al eliminar ⚠️'));
+}
+
+// ── Month filter ───────────────────────────────────────────
+function monthTxs() {
+  return txs.filter(t => {
+    const d = new Date(t.date);
+    return d.getMonth() === viewMonth && d.getFullYear() === viewYear;
+  });
+}
+
+// ── Summary ────────────────────────────────────────────────
+function cumulativeBalance(currency) {
+  const cutoff = new Date(viewYear, viewMonth + 1, 0, 23, 59, 59, 999);
+  return txs
+    .filter(t => new Date(t.date) <= cutoff && t.currency === currency)
+    .reduce((s, t) => s + (t.type === 'income' ? t.amount : -t.amount), 0);
+}
+
+function selAccount() { return accounts.find(a => a.id === selAccountId) || null; }
+function filterCurrency() { return selAccount()?.currency || null; }
+
+function updateSummary() {
+  const m   = monthTxs();
+  const acc = selAccount();
+  const cur = filterCurrency();
+
+  function sum(c, type) {
+    return m.filter(t => t.currency === c && t.type === type).reduce((s, t) => s + t.amount, 0);
+  }
+
+  const usdCardEl = document.getElementById('balUSD-card');
+  const uyuCardEl = document.getElementById('balUYU-card');
+
+  if (acc) {
+    // Single account mode: show only its currency, hide the other
+    const isUSD = acc.currency === 'USD';
+    usdCardEl.style.display = isUSD ? '' : 'none';
+    uyuCardEl.style.display = isUSD ? 'none' : '';
+
+    const bal = (acc.initialBalance || 0) + cumulativeBalance(acc.currency);
+    if (isUSD) {
+      const bU = document.getElementById('balUSD');
+      bU.textContent = fmtUSD(bal);
+      bU.style.color = bal < 0 ? 'var(--red)' : 'var(--blue)';
+      document.getElementById('balUSD-lbl').textContent = acc.name;
+      document.getElementById('balUSD-sub').textContent = 'Dólares';
+      renderDualLines('incLines', sum('USD','income'), 0, 'var(--green)');
+      renderDualLines('expLines', sum('USD','expense'), 0, 'var(--red)');
+    } else {
+      const bY = document.getElementById('balUYU');
+      bY.textContent = fmtUYU(bal);
+      bY.style.color = bal < 0 ? 'var(--red)' : 'var(--orange)';
+      document.getElementById('balUYU-lbl').textContent = acc.name;
+      document.getElementById('balUYU-sub').textContent = 'Pesos uru.';
+      renderDualLines('incLines', 0, sum('UYU','income'), 'var(--green)');
+      renderDualLines('expLines', 0, sum('UYU','expense'), 'var(--red)');
+    }
+  } else {
+    // All accounts mode
+    usdCardEl.style.display = '';
+    uyuCardEl.style.display = '';
+    document.getElementById('balUSD-lbl').textContent = 'Balance USD';
+    document.getElementById('balUSD-sub').textContent = 'Dólares';
+    document.getElementById('balUYU-lbl').textContent = 'Balance UYU';
+    document.getElementById('balUYU-sub').textContent = 'Pesos uru.';
+
+    const balUSD = cumulativeBalance('USD');
+    const balUYU = cumulativeBalance('UYU');
+    const bU = document.getElementById('balUSD');
+    const bY = document.getElementById('balUYU');
+    bU.textContent = fmtUSD(balUSD); bU.style.color = balUSD < 0 ? 'var(--red)' : 'var(--blue)';
+    bY.textContent = fmtUYU(balUYU); bY.style.color = balUYU < 0 ? 'var(--red)' : 'var(--orange)';
+    renderDualLines('incLines', sum('USD','income'), sum('UYU','income'), 'var(--green)');
+    renderDualLines('expLines', sum('USD','expense'), sum('UYU','expense'), 'var(--red)');
+  }
+}
+
+function renderDualLines(elId, usd, uyu, color) {
+  const el = document.getElementById(elId);
+  const lines = [];
+  if (usd > 0) lines.push({ fmt: fmtUSD(usd), tag: 'USD' });
+  if (uyu > 0) lines.push({ fmt: fmtUYU(uyu), tag: 'UYU' });
+
+  if (!lines.length) {
+    el.innerHTML = `<div class="scard-line"><span class="scard-val" style="color:${color}">$0</span></div>`;
+    return;
+  }
+
+  const small = lines.length > 1 ? '15px' : '18px';
+  el.innerHTML = lines.map((l, i) => `
+    <div class="scard-line" style="margin-bottom:${i < lines.length - 1 ? '3px' : '0'}">
+      <span class="scard-val" style="color:${color};font-size:${small}">${esc(l.fmt)}</span>
+      <span class="scard-curr">${l.tag}</span>
+    </div>`).join('');
+}
+
+// ── Chart ──────────────────────────────────────────────────
+function toggleChartMode() {
+  chartMode = chartMode === 'pct' ? 'val' : 'pct';
+  const btn = document.getElementById('chartModeBtn');
+  btn.textContent = chartMode === 'pct' ? '%' : '$';
+  btn.className   = 'mode-toggle ' + chartMode;
+  renderChart();
+}
+
+function renderChart() {
+  const cur    = filterCurrency();
+  const allExp = monthTxs().filter(t => t.type === 'expense');
+  const hasUSD = (!cur || cur === 'USD') && allExp.some(t => t.currency === 'USD');
+  const hasUYU = (!cur || cur === 'UYU') && allExp.some(t => t.currency === 'UYU');
+
+  document.getElementById('chartNoData').style.display  = (!hasUSD && !hasUYU) ? 'block' : 'none';
+  document.getElementById('chartUSDCard').style.display = hasUSD ? 'block' : 'none';
+  document.getElementById('chartUYUCard').style.display = hasUYU ? 'block' : 'none';
+
+  if (hasUSD) renderCurrChart('USD', 'donutUSD', 'chartInnerUSD', 'legendUSD');
+  if (hasUYU) renderCurrChart('UYU', 'donutUYU', 'chartInnerUYU', 'legendUYU');
+}
+
+function renderCurrChart(currency, canvasId, innerId, legendId) {
+  const expenses = monthTxs().filter(t => t.type === 'expense' && t.currency === currency);
+  const bycat = {};
+  expenses.forEach(t => { bycat[t.category] = (bycat[t.category] || 0) + t.amount; });
+
+  const entries = Object.entries(bycat).map(([id, value]) => ({
+    id, value,
+    name:  getCatName(id),
+    icon:  getCatIcon(id),
+    color: getCatColor(id),
+  })).sort((a, b) => b.value - a.value);
+
+  const total = entries.reduce((s, e) => s + e.value, 0);
+
+  const canvas = document.getElementById(canvasId);
+  const ctx    = canvas.getContext('2d');
+  const W = 130, cx = W / 2, cy = W / 2, R = 56, r = 33;
+  const GAP = entries.length > 1 ? 0.05 : 0;
+
+  ctx.clearRect(0, 0, W, W);
+  let angle = -Math.PI / 2;
+
+  entries.forEach(e => {
+    const sweep = (e.value / total) * (Math.PI * 2 - GAP * entries.length);
+    const a1 = angle + GAP / 2, a2 = angle + sweep - GAP / 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, a1, a2);
+    ctx.arc(cx, cy, r, a2, a1, true);
+    ctx.closePath();
+    ctx.fillStyle = e.color;
+    ctx.fill();
+    angle += sweep;
+  });
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, r - 1.5, 0, Math.PI * 2);
+  ctx.fillStyle = '#1a1a28';
+  ctx.fill();
+
+  ctx.fillStyle = '#e2e8f0';
+  ctx.font = 'bold 11px system-ui';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(entries.length === 1 ? '1 cat.' : entries.length + ' cats', cx, cy);
+
+  document.getElementById(legendId).innerHTML = entries.map(e => {
+    const label = chartMode === 'pct'
+      ? Math.round(e.value / total * 100) + '%'
+      : (currency === 'USD' ? fmtUSD(e.value) : fmtUYU(e.value));
+    return `
+      <div class="leg-row">
+        <div class="leg-dot" style="background:${e.color}"></div>
+        <span class="leg-name">${e.icon} ${esc(e.name)}</span>
+        <span class="leg-pct" style="color:${e.color}">${label}</span>
+      </div>`;
+  }).join('');
+}
+
+// ── Transaction list ───────────────────────────────────────
+function setFilter(f, btn) {
+  selFilter = f;
+  document.querySelectorAll('#pane-tx .f-pill').forEach(p => p.classList.remove('on'));
+  btn.classList.add('on');
+  renderTxList();
+}
+
+function renderTxList() {
+  const list = monthTxs().filter(t => selFilter === 'all' || t.type === selFilter);
+  const el   = document.getElementById('txList');
+
+  if (!list.length) {
+    el.innerHTML = `<div class="tx-empty"><div class="tx-empty-ico">📭</div><div>No hay transacciones<br>para este período</div></div>`;
+    return;
+  }
+
+  const TRASH = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>`;
+
+  el.innerHTML = list.map(t => {
+    const d      = new Date(t.date);
+    const dStr   = d.toLocaleDateString('es', { day: '2-digit', month: 'short' });
+    const sign   = t.type === 'income' ? '+' : '−';
+    const fmtAmt = t.currency === 'USD' ? fmtUSD(t.amount) : fmtUYU(t.amount);
+
+    return `
+      <div class="tx-item">
+        <div class="tx-ico ${t.type}">${getCatIcon(t.category)}</div>
+        <div class="tx-body">
+          <div class="tx-cat">${esc(getCatName(t.category))}</div>
+          ${t.note ? `<div class="tx-note">${esc(t.note)}</div>` : ''}
+          <div class="tx-date">${dStr}</div>
+        </div>
+        <div class="tx-right">
+          <div class="tx-amt ${t.type}">${sign}${esc(fmtAmt)}</div>
+          <div class="tx-curr-tag">${t.currency}</div>
+        </div>
+        <button class="tx-del" onclick="delTx('${esc(String(t.id))}')" title="Eliminar">${TRASH}</button>
+      </div>`;
+  }).join('');
+}
+
+// ── Category picker ────────────────────────────────────────
+function buildEmojiGrid() {
+  document.getElementById('emojiGrid').innerHTML = EMOJI_LIST.map(e =>
+    `<button class="emoji-btn" onclick="selectEmoji('${e}')" data-e="${e}">${e}</button>`
+  ).join('');
+}
+
+function selectEmoji(e) {
+  selEmoji = e;
+  document.querySelectorAll('.emoji-btn').forEach(b => {
+    b.classList.toggle('sel', b.dataset.e === e);
+  });
+  const preview = document.getElementById('emojiPreview');
+  preview.textContent = e;
+  preview.removeAttribute('data-empty');
+  preview.classList.add('has-val');
+}
+
+function buildCatSelect() {
+  document.getElementById('catSel').innerHTML = getCats()
+    .map(c => `<option value="${esc(c.id)}">${c.icon}  ${cap(esc(c.name))}</option>`)
+    .join('');
+}
+
+function renderCatList() {
+  const cats  = getCats();
+  const TRASH = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>`;
+
+  document.getElementById('catList').innerHTML = cats.map((c, i) => {
+    const color = PALETTE[i % PALETTE.length];
+    const bg    = color + '1a';
+    return `
+      <div class="cat-item">
+        <div class="cat-ico-wrap" style="background:${bg}">${c.icon}</div>
+        <div class="cat-name-lbl">${esc(c.name)}</div>
+        <button class="cat-del-btn" onclick="delCat('${esc(c.id)}')" title="Eliminar">${TRASH}</button>
+      </div>`;
+  }).join('');
+}
+
+function addCat() {
+  const name = document.getElementById('catNameInp').value.trim().toLowerCase();
+  if (!selEmoji) { toast('Elegí un ícono ⚠️'); return; }
+  if (!name)     { toast('Escribí un nombre ⚠️'); return; }
+  if (getCats().some(c => c.name === name)) { toast('Ya existe esa categoría ⚠️'); return; }
+
+  const cat = { id: 'c_' + Date.now(), name, icon: selEmoji };
+
+  selEmoji = '';
+  document.getElementById('catNameInp').value = '';
+  document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('sel'));
+  const preview = document.getElementById('emojiPreview');
+  preview.textContent = '';
+  preview.setAttribute('data-empty', '');
+  preview.classList.remove('has-val');
+
+  toast('Categoría creada ✓');
+  userBase().collection('categories').doc(cat.id).set(cat)
+    .catch(() => toast('Error al guardar ⚠️'));
+}
+
+function delCat(id) {
+  if (!confirm('¿Eliminar esta categoría?\nLas transacciones existentes seguirán mostrándola.')) return;
+
+  if (DEFAULT_CATS.some(c => c.id === id)) {
+    const newHidden = [...hiddenDefaults, id];
+    toast('Categoría eliminada');
+    userBase().collection('settings').doc('main')
+      .set({ hiddenDefaults: newHidden }, { merge: true })
+      .catch(() => toast('Error ⚠️'));
+  } else {
+    toast('Categoría eliminada');
+    userBase().collection('categories').doc(id).delete()
+      .catch(() => toast('Error ⚠️'));
+  }
+}
+
+// ── Month navigation ───────────────────────────────────────
+const MONTHS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+let pickerDisplayYear = new Date().getFullYear();
+
+function updateMonthDisplay() {
+  document.getElementById('hMonth').textContent = MONTHS[viewMonth] + ' ' + viewYear;
+}
+
+function toggleMonthPicker(e) {
+  e.stopPropagation();
+  const drop = document.getElementById('monthPickDrop');
+  const btn  = document.getElementById('monthPickBtn');
+  const isOpen = drop.classList.toggle('open');
+  btn.classList.toggle('open', isOpen);
+  if (isOpen) {
+    pickerDisplayYear = viewYear;
+    renderPickerGrid();
+  }
+}
+
+function closePicker() {
+  document.getElementById('monthPickDrop').classList.remove('open');
+  document.getElementById('monthPickBtn').classList.remove('open');
+}
+
+function pickerShiftYear(delta) {
+  const now = new Date();
+  const next = pickerDisplayYear + delta;
+  if (next > now.getFullYear()) return;
+  pickerDisplayYear = next;
+  renderPickerGrid();
+}
+
+function renderPickerGrid() {
+  const now = new Date();
+  document.getElementById('pickerYearLabel').textContent = pickerDisplayYear;
+  document.getElementById('mpPrevYearBtn').disabled = pickerDisplayYear <= (now.getFullYear() - 5);
+  document.getElementById('mpNextYearBtn').disabled = pickerDisplayYear >= now.getFullYear();
+  document.getElementById('monthPickGrid').innerHTML = MONTHS.map((name, i) => {
+    const isFuture = pickerDisplayYear > now.getFullYear() ||
+      (pickerDisplayYear === now.getFullYear() && i > now.getMonth());
+    const isActive = pickerDisplayYear === viewYear && i === viewMonth;
+    return `<button class="mp-cell${isActive ? ' active' : ''}"
+      onclick="selectPickerMonth(${i})"
+      ${isFuture ? 'disabled' : ''}>${name}</button>`;
+  }).join('');
+}
+
+function selectPickerMonth(month) {
+  viewMonth = month;
+  viewYear  = pickerDisplayYear;
+  updateMonthDisplay();
+  closePicker();
+  refresh();
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#monthPicker')) closePicker();
+});
+
+// ── Debt helpers ───────────────────────────────────────────
+const TRASH_SVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>`;
+
+function debtPaid(d)      { return d.payments.reduce((s, p) => s + p.amount, 0); }
+function debtRemaining(d) { return Math.max(0, d.totalAmount - debtPaid(d)); }
+function debtPct(d)       { return Math.min(100, Math.round(debtPaid(d) / d.totalAmount * 100)); }
+function isOverdue(d)     { return d.dueDate && !d.paid && new Date(d.dueDate + 'T23:59:59') < new Date(); }
+
+function updateDebtSummary() {
+  const active = debts.filter(d => !d.paid);
+  const usdRem = active.filter(d => d.currency === 'USD').reduce((s, d) => s + debtRemaining(d), 0);
+  const uyuRem = active.filter(d => d.currency === 'UYU').reduce((s, d) => s + debtRemaining(d), 0);
+  const hasUSD = usdRem > 0, hasUYU = uyuRem > 0;
+
+  document.getElementById('debtCardNone').style.display = (!hasUSD && !hasUYU) ? 'block' : 'none';
+  document.getElementById('debtCardUSD').style.display  = hasUSD ? 'block' : 'none';
+  document.getElementById('debtCardUYU').style.display  = hasUYU ? 'block' : 'none';
+
+  if (hasUSD) document.getElementById('debtTotUSD').textContent = fmtUSD(usdRem);
+  if (hasUYU) document.getElementById('debtTotUYU').textContent = fmtUYU(uyuRem);
+}
+
+function setDebtFilter(f, btn) {
+  selDebtFilter = f;
+  document.querySelectorAll('#pane-deudas .f-pill').forEach(p => p.classList.remove('on'));
+  btn.classList.add('on');
+  renderDebtList();
+}
+
+function renderDebtList() {
+  const list = debts.filter(d => selDebtFilter === 'active' ? !d.paid : d.paid);
+  const el   = document.getElementById('debtList');
+
+  if (!list.length) {
+    el.innerHTML = `<div class="tx-empty"><div class="tx-empty-ico">${selDebtFilter === 'active' ? '🙌' : '📋'}</div><div>${selDebtFilter === 'active' ? 'Sin deudas activas' : 'Sin deudas saldadas'}</div></div>`;
+    return;
+  }
+
+  el.innerHTML = list.map(d => {
+    const paid  = debtPaid(d);
+    const rem   = debtRemaining(d);
+    const pct   = debtPct(d);
+    const over  = isOverdue(d);
+    const fmtR  = d.currency === 'USD' ? fmtUSD(rem)           : fmtUYU(rem);
+    const fmtP  = d.currency === 'USD' ? fmtUSD(paid)          : fmtUYU(paid);
+    const fmtT  = d.currency === 'USD' ? fmtUSD(d.totalAmount) : fmtUYU(d.totalAmount);
+    const dueStr = d.dueDate
+      ? new Date(d.dueDate + 'T12:00:00').toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric' })
+      : null;
+
+    return `
+      <div class="debt-card${over ? ' overdue' : ''}${d.paid ? ' paid' : ''}">
+        <div class="debt-header">
+          <div style="min-width:0">
+            <div class="debt-entity">${esc(d.entity)}</div>
+            ${d.note ? `<div class="debt-note">${esc(d.note)}</div>` : ''}
+            ${dueStr ? `<div class="debt-due${over ? ' over' : ''}">${over ? '⚠️ Vencida: ' : 'Vence: '}${dueStr}</div>` : ''}
+          </div>
+          <div class="debt-meta">
+            <span class="debt-curr-tag ${d.currency}">${d.currency}</span>
+            <button class="debt-del-btn" onclick="deleteDebt('${d.id}')">${TRASH_SVG}</button>
+          </div>
+        </div>
+
+        <div class="debt-amounts">
+          <span>Pagado: <strong>${fmtP}</strong></span>
+          <span>${pct}%</span>
+        </div>
+        <div class="debt-progress-bar">
+          <div class="debt-progress-fill${pct >= 100 ? ' done' : ''}" style="width:${pct}%"></div>
+        </div>
+        <div class="debt-amounts">
+          <span>Total: ${fmtT}</span>
+          <span>Resta: <strong class="debt-remaining">${fmtR}</strong></span>
+        </div>
+
+        ${!d.paid ? `
+          <div class="debt-actions">
+            <button class="debt-action-btn pay"  onclick="toggleAbonoForm('${d.id}')">Abonar</button>
+            <button class="debt-action-btn done" onclick="markDebtPaid('${d.id}')">Marcar saldada</button>
+          </div>
+          <div class="abono-form" id="abono-form-${d.id}" style="display:none">
+            <input type="number" id="abono-amt-${d.id}" placeholder="Monto del abono" min="0.01" step="any" inputmode="decimal">
+            <button class="abono-confirm" onclick="registerAbono('${d.id}')">Confirmar</button>
+          </div>
+        ` : `<div class="debt-paid-badge">✓ Saldada</div>`}
+      </div>`;
+  }).join('');
+}
+
+function setDebtCurr(c) {
+  selDebtCurr = c;
+  document.getElementById('dBtn-USD').classList.toggle('on', c === 'USD');
+  document.getElementById('dBtn-UYU').classList.toggle('on', c === 'UYU');
+}
+
+function addDebt() {
+  const entity = document.getElementById('debtEntity').value.trim();
+  const amt    = parseFloat(document.getElementById('debtAmt').value);
+  const due    = document.getElementById('debtDue').value;
+  const note   = document.getElementById('debtNote').value.trim();
+
+  if (!entity)          { toast('Ingresá el nombre ⚠️'); return; }
+  if (!amt || amt <= 0) { toast('Ingresá un monto válido ⚠️'); return; }
+
+  const debt = { id: 'debt_' + Date.now(), entity, totalAmount: amt, currency: selDebtCurr,
+                 dueDate: due || null, note, paid: false, payments: [] };
+
+  ['debtEntity','debtAmt','debtDue','debtNote'].forEach(id => document.getElementById(id).value = '');
+  toast('Deuda agregada ✓');
+
+  userBase().collection('debts').doc(debt.id).set(debt)
+    .catch(() => toast('Error al guardar ⚠️'));
+}
+
+function deleteDebt(id) {
+  if (!confirm('¿Eliminar esta deuda y su historial de abonos?')) return;
+  toast('Deuda eliminada');
+  userBase().collection('debts').doc(id).delete()
+    .catch(() => toast('Error al eliminar ⚠️'));
+}
+
+function toggleAbonoForm(debtId) {
+  document.querySelectorAll('.abono-form').forEach(f => { f.style.display = 'none'; f.dataset.open = '0'; });
+
+  const form = document.getElementById('abono-form-' + debtId);
+  if (!form) return;
+  if (form.dataset.open === '1') { form.dataset.open = '0'; return; }
+
+  const debt = debts.find(d => d.id === debtId);
+  if (!debt) { toast('Error: deuda no encontrada ⚠️'); return; }
+
+  const input = document.getElementById('abono-amt-' + debtId);
+  if (!input) return;
+
+  const rem = debtRemaining(debt);
+  input.value = debt.currency === 'USD' ? rem.toFixed(2) : String(Math.round(rem));
+  form.style.display = 'flex';
+  form.dataset.open = '1';
+  setTimeout(() => { input.focus(); input.select(); }, 30);
+}
+
+function registerAbono(debtId) {
+  const debt = debts.find(d => d.id === debtId);
+  if (!debt) { toast('Error: deuda no encontrada ⚠️'); return; }
+
+  const input = document.getElementById('abono-amt-' + debtId);
+  if (!input) { toast('Error interno ⚠️'); return; }
+
+  const raw = input.value.trim().replace(',', '.');
+  const amt = parseFloat(raw);
+  if (!raw || isNaN(amt) || amt <= 0) { toast('Ingresá un monto válido ⚠️'); return; }
+
+  const rem      = debtRemaining(debt);
+  const finalAmt = Math.min(amt, rem);
+
+  const txId = 'tx_' + Date.now();
+  const tx = {
+    id: txId, amount: finalAmt, currency: debt.currency,
+    type: 'expense', category: 'deuda',
+    note: 'Abono · ' + debt.entity + (debt.note ? ' · ' + debt.note : ''),
+    date: new Date().toISOString()
+  };
+
+  const newPayment  = { id: 'p_' + Date.now(), amount: finalAmt, date: tx.date, txId };
+  const updatedDebt = { ...debt, payments: [...debt.payments, newPayment] };
+  const newRem      = debtRemaining(updatedDebt);
+  if (newRem < 0.01) updatedDebt.paid = true;
+
+  const form = document.getElementById('abono-form-' + debtId);
+  if (form) { form.style.display = 'none'; form.dataset.open = '0'; }
+
+  const fmtR = debt.currency === 'USD' ? fmtUSD(newRem) : fmtUYU(newRem);
+  toast(newRem < 0.01 ? '¡Deuda saldada! 🎉' : 'Abono registrado ✓  —  Resta ' + fmtR);
+
+  const base  = userBase();
+  const batch = db.batch();
+  batch.set(base.collection('transactions').doc(txId), tx);
+  batch.set(base.collection('debts').doc(debtId), updatedDebt);
+  batch.commit().catch(() => toast('Error al guardar ⚠️'));
+}
+
+function markDebtPaid(id) {
+  const debt = debts.find(d => d.id === id);
+  if (!debt) return;
+
+  const rem    = debtRemaining(debt);
+  const fmtRem = debt.currency === 'USD' ? fmtUSD(rem) : fmtUYU(rem);
+  const msg    = rem > 0.01
+    ? `¿Marcar como saldada?\n\nQuedan ${fmtRem} sin abonar. La deuda se archivará tal cual.\nSi querés registrar el pago final, usá "Abonar" primero.`
+    : '¿Marcar esta deuda como saldada?';
+
+  if (!confirm(msg)) return;
+
+  toast('Deuda archivada ✓');
+  userBase().collection('debts').doc(id).set({ ...debt, paid: true })
+    .catch(() => toast('Error ⚠️'));
+}
+
+// ── Backup ─────────────────────────────────────────────────
+function exportData() {
+  const payload = JSON.stringify({ version: 2, exportDate: new Date().toISOString(), txs, customCats, hiddenDefaults, debts }, null, 2);
+  const a = Object.assign(document.createElement('a'), {
+    href:     URL.createObjectURL(new Blob([payload], { type: 'application/json' })),
+    download: 'finanzas-' + new Date().toISOString().slice(0, 10) + '.json',
+  });
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('Datos exportados ✓');
+}
+
+function importData() {
+  const input = Object.assign(document.createElement('input'), { type: 'file', accept: '.json,application/json' });
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!Array.isArray(data.txs)) { toast('Archivo inválido ⚠️'); return; }
+        if (!confirm(`¿Importar backup del ${data.exportDate ? data.exportDate.slice(0,10) : 'archivo'}?\nSe agregarán ${data.txs.length} movimiento(s) a la nube.`)) return;
+        migrateLocalData(data);
+      } catch { toast('Error al leer el archivo ⚠️'); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function updateBackupStat() {
+  const el = document.getElementById('backupStat');
+  if (!el) return;
+  const cats = customCats.length;
+  const dbt  = debts.length;
+  el.textContent = txs.length + ' movimiento' + (txs.length !== 1 ? 's' : '')
+    + (dbt  ? ' · ' + dbt  + ' deuda'  + (dbt  !== 1 ? 's' : '') : '')
+    + (cats ? ' · ' + cats + ' cat. personalizada' + (cats !== 1 ? 's' : '') : '')
+    + ' en la nube.';
+}
+
+// ── Toast ──────────────────────────────────────────────────
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ── Account selector (General tab) ─────────────────────────
+function renderAccountPills() {
+  const el = document.getElementById('accPills');
+  if (!el) return;
+  if (!accounts.length) { el.innerHTML = ''; return; }
+
+  const allBtn = `<button class="acc-pill${selAccountId === null ? ' active' : ''}" onclick="selectAccount(null)">Todas</button>`;
+  const pills = accounts.map(a => {
+    const active   = selAccountId === a.id ? ' active' : '';
+    const icon     = '💳';
+    const color    = a.color || '#3b82f6';
+    const bgStyle  = selAccountId === a.id
+      ? `background:${color};border-color:${color};`
+      : ``;
+    return `<div class="pill-wrap">
+      <button class="acc-pill${active}" style="${bgStyle}" onclick="selectAccount('${a.id}')">
+        ${icon} ${esc(a.name)}<span class="pill-cur">${a.currency}</span>
+      </button>
+      <button class="acc-pill pill-add${active}" style="${bgStyle}" onclick="goToTx('${a.id}')" title="Agregar movimiento">+</button>
+    </div>`;
+  }).join('');
+  el.innerHTML = allBtn + pills;
+}
+
+function selectAccount(id) {
+  selAccountId = id;
+  renderAccountPills();
+  updateSummary();
+  renderChart();
+  renderStats();
+  renderPriorityDebt();
+}
+
+function navTo(tabId) {
+  const btn = document.querySelector(`.nav-btn[onclick*="'${tabId}'"]`);
+  if (btn) showTab(tabId, btn);
+}
+
+function goToTx(accId) {
+  selectAccount(accId);
+  navTo('tx');
+}
+
+// ── Priority debt widget ────────────────────────────────────
+function renderPriorityDebt() {
+  const section = document.getElementById('priodebtSection');
+  const content = document.getElementById('priodebtContent');
+  if (!section || !content) return;
+
+  const active = debts.filter(d => !d.paid);
+  if (!active.length) { section.style.display = 'none'; return; }
+
+  // Priority: overdue first, then soonest due date, then highest remaining
+  const now = new Date();
+  const scored = active.map(d => {
+    const rem = debtRemaining(d);
+    const overdue = isOverdue(d) ? 0 : 1;
+    const due = d.dueDate ? new Date(d.dueDate + 'T12:00:00').getTime() : 9e15;
+    return { d, rem, overdue, due };
+  }).sort((a, b) => a.overdue - b.overdue || a.due - b.due || b.rem - a.rem);
+
+  const { d, rem } = scored[0];
+  const fmtFn = d.currency === 'USD' ? fmtUSD : fmtUYU;
+  const pct   = debtPct(d);
+
+  let dueInfo = '';
+  let planHTML = '';
+
+  if (d.dueDate) {
+    const dueDate  = new Date(d.dueDate + 'T12:00:00');
+    const msLeft   = dueDate - now;
+    const daysLeft = Math.ceil(msLeft / (1000 * 60 * 60 * 24));
+    const moLeft   = Math.max(1, Math.ceil(msLeft / (1000 * 60 * 60 * 24 * 30)));
+    const monthly  = rem / moLeft;
+    const badge    = isOverdue(d)
+      ? `<span class="prio-debt-badge">VENCIDA</span>`
+      : `<span class="prio-debt-badge ok">${daysLeft > 0 ? daysLeft + ' días' : 'hoy'}</span>`;
+    dueInfo = badge;
+    planHTML = `<div class="prio-debt-plan">
+      <div class="prio-plan-item">
+        <span class="prio-plan-lbl">Vence</span>
+        <span class="prio-plan-val">${dueDate.toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric'})}</span>
+      </div>
+      <div class="prio-plan-item">
+        <span class="prio-plan-lbl">Cuotas sugeridas</span>
+        <span class="prio-plan-val">${moLeft} mes${moLeft !== 1 ? 'es' : ''}</span>
+      </div>
+      <div class="prio-plan-item">
+        <span class="prio-plan-lbl">Pago mensual</span>
+        <span class="prio-plan-val">${fmtFn(monthly)}</span>
+      </div>
+    </div>`;
+  } else {
+    const suggested = rem * 0.1;
+    planHTML = `<div class="prio-debt-plan">
+      <div class="prio-plan-item">
+        <span class="prio-plan-lbl">Pago sugerido (10%)</span>
+        <span class="prio-plan-val">${fmtFn(suggested)}</span>
+      </div>
+      <div class="prio-plan-item">
+        <span class="prio-plan-lbl">Meses aprox.</span>
+        <span class="prio-plan-val">~${Math.ceil(rem / suggested)}</span>
+      </div>
+    </div>`;
+  }
+
+  content.innerHTML = `<div class="prio-debt-card">
+    <div class="prio-debt-header">
+      <span class="prio-debt-icon">🏦</span>
+      <span class="prio-debt-name">${esc(d.entity)}${d.note ? ` · <span style="font-weight:500;color:var(--muted)">${esc(d.note)}</span>` : ''}</span>
+      ${dueInfo}
+    </div>
+    <div>
+      <div class="prio-debt-amounts">
+        <span class="prio-debt-rem">${fmtFn(rem)}</span>
+        <span class="prio-debt-of">de ${fmtFn(d.totalAmount)}</span>
+      </div>
+      <div class="prio-debt-bar-wrap" style="margin-top:8px">
+        <div class="prio-debt-bar-fill" style="width:${100 - pct}%"></div>
+      </div>
+    </div>
+    ${planHTML}
+  </div>`;
+  section.style.display = '';
+}
+
+// ── Accounts CRUD ───────────────────────────────────────────
+const ACC_COLORS = [
+  '#3b82f6','#6366f1','#a855f7','#ec4899',
+  '#ef4444','#f97316','#f59e0b','#22c55e',
+  '#14b8a6','#64748b'
+];
+let editingAccId = null;
+
+function initAccColorSwatches(containerId, currentColor, onSelect) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = ACC_COLORS.map(c =>
+    `<div class="color-swatch${c === (currentColor || ACC_COLORS[0]) ? ' selected' : ''}"
+      style="background:${c}"
+      onclick="(${onSelect.toString()})('${c}',this,event)"></div>`
+  ).join('');
+}
+
+function buildAccFormSwatches() {
+  const el = document.getElementById('accColorSwatches');
+  if (!el) return;
+  el.innerHTML = ACC_COLORS.map((c, i) =>
+    `<div class="color-swatch${c === selAccColor ? ' selected' : ''}"
+      style="background:${c}" data-color="${c}"
+      onclick="pickAccFormColor('${c}',this)"></div>`
+  ).join('');
+}
+
+let selAccColor = ACC_COLORS[0];
+function pickAccFormColor(color, el) {
+  selAccColor = color;
+  document.querySelectorAll('#accColorSwatches .color-swatch').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function setAccCurr(cur, btn) {
+  selAccCurr = cur;
+  document.querySelectorAll('#accCurrSeg .seg-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function addAccount() {
+  const name    = document.getElementById('accName').value.trim();
+  const initBal = parseFloat(document.getElementById('accInitBal').value) || 0;
+  if (!name) { toast('Ingresá el nombre de la cuenta ⚠️'); return; }
+
+  const acc = {
+    id: 'acc_' + Date.now(),
+    name,
+    icon: '💳',
+    color: selAccColor,
+    currency: selAccCurr,
+    initialBalance: initBal,
+    createdAt: new Date().toISOString()
+  };
+
+  document.getElementById('accName').value    = '';
+  document.getElementById('accInitBal').value = '';
+  selAccColor = ACC_COLORS[0];
+  buildAccFormSwatches();
+  toast('Cuenta agregada ✓');
+
+  userBase().collection('accounts').doc(acc.id).set(acc)
+    .catch(() => toast('Error al guardar ⚠️'));
+}
+
+function deleteAccount(id) {
+  if (!confirm('¿Eliminar esta cuenta?')) return;
+  toast('Cuenta eliminada');
+  userBase().collection('accounts').doc(id).delete()
+    .catch(() => toast('Error al eliminar ⚠️'));
+  if (selAccountId === id) { selAccountId = null; }
+}
+
+function toggleAccEdit(id) {
+  editingAccId = editingAccId === id ? null : id;
+  renderAccountList();
+}
+
+function pickAccEditColor(color, el, id) {
+  document.querySelectorAll(`#acc-edit-swatches-${id} .color-swatch`).forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function saveAccEdit(id) {
+  const acc = accounts.find(a => a.id === id);
+  if (!acc) return;
+  const swatches = document.querySelectorAll(`#acc-edit-swatches-${id} .color-swatch.selected`);
+  const color = swatches.length ? swatches[0].dataset.color : (acc.color || ACC_COLORS[0]);
+  toast('Guardando...');
+  userBase().collection('accounts').doc(id).update({ color })
+    .then(() => { editingAccId = null; toast('Cuenta actualizada ✓'); })
+    .catch(() => toast('Error al guardar ⚠️'));
+}
+
+function renderAccountList() {
+  const el = document.getElementById('accList');
+  if (!el) return;
+  if (!accounts.length) {
+    el.innerHTML = '<p style="color:var(--dim);font-size:13px">No tenés cuentas registradas.</p>';
+    return;
+  }
+  el.innerHTML = accounts.map(a => {
+    const isUSD   = a.currency === 'USD';
+    const bal     = (a.initialBalance || 0) + cumulativeBalance(a.currency);
+    const fmtFn   = isUSD ? fmtUSD : fmtUYU;
+    const balColor = bal < 0 ? 'var(--red)' : isUSD ? 'var(--blue)' : 'var(--orange)';
+    const icon    = a.icon  || '🏦';
+    const color   = a.color || '#3b82f6';
+    const isEditing = editingAccId === a.id;
+
+    const swatchesHTML = ACC_COLORS.map(c =>
+      `<div class="color-swatch${c === color ? ' selected' : ''}"
+        style="background:${c}" data-color="${c}"
+        onclick="pickAccEditColor('${c}',this,'${a.id}')"></div>`
+    ).join('');
+
+    const editPanel = isEditing ? `
+      <div class="acc-edit-panel">
+        <div class="acc-edit-row">
+          <span class="acc-edit-lbl">Color</span>
+          <div class="color-swatches" id="acc-edit-swatches-${a.id}">${swatchesHTML}</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="acc-save-btn" onclick="saveAccEdit('${a.id}')">Guardar</button>
+          <button class="acc-save-btn" style="background:var(--card2);color:var(--text)" onclick="toggleAccEdit('${a.id}')">Cancelar</button>
+        </div>
+      </div>` : '';
+
+    return `<div class="acc-item">
+      <div class="acc-item-icon" style="background:${color}22;color:${color}" onclick="toggleAccEdit('${a.id}')" title="Editar ícono y color">${icon}</div>
+      <div>
+        <div class="acc-item-name">${esc(a.name)}</div>
+        <div class="acc-item-bal">${a.currency}${a.initialBalance ? ' · saldo inicial ' + fmtFn(a.initialBalance) : ''}</div>
+      </div>
+      <div class="acc-item-right">
+        <span class="acc-item-total" style="color:${balColor}">${fmtFn(bal)}</span>
+        <button class="debt-del-btn" onclick="deleteAccount('${a.id}')" title="Eliminar">${TRASH_SVG}</button>
+      </div>
+      ${editPanel}
+    </div>`;
+  }).join('');
+}
+
+// ── Stats ──────────────────────────────────────────────────
+function renderStats() {
+  if (!appReady) return;
+  const cur = filterCurrency();
+  const showUSD = !cur || cur === 'USD';
+  const showUYU = !cur || cur === 'UYU';
+
+  renderStatsTotals();
+
+  const usdSection = document.getElementById('bar-chart-usd')?.closest('.card')?.parentElement;
+  const uyuSection = document.getElementById('bar-chart-uyu')?.closest('.card')?.parentElement;
+  if (usdSection) usdSection.style.display = showUSD ? '' : 'none';
+  if (uyuSection) uyuSection.style.display = showUYU ? '' : 'none';
+
+  if (showUSD) renderMonthlyBars('USD', 'bar-chart-usd');
+  if (showUYU) renderMonthlyBars('UYU', 'bar-chart-uyu');
+  renderTopCats();
+}
+
+function renderStatsTotals() {
+  const totals = { USD: { inc: 0, exp: 0 }, UYU: { inc: 0, exp: 0 } };
+  txs.forEach(t => {
+    const cur = (t.currency || 'USD').toUpperCase();
+    if (!totals[cur]) return;
+    if (t.type === 'income') totals[cur].inc += t.amount;
+    else                     totals[cur].exp += t.amount;
+  });
+
+  ['USD', 'UYU'].forEach(cur => {
+    const el  = document.getElementById('stats-totals-' + cur.toLowerCase());
+    if (!el) return;
+    const fmtFn = cur === 'USD' ? fmtUSD : fmtUYU;
+    el.innerHTML = `
+      <div class="card" style="text-align:center">
+        <div style="font-size:10px;font-weight:700;color:var(--dim);letter-spacing:.5px;margin-bottom:4px">${cur} — INGRESOS</div>
+        <div style="font-size:20px;font-weight:900;color:var(--green)">${fmtFn(totals[cur].inc)}</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div style="font-size:10px;font-weight:700;color:var(--dim);letter-spacing:.5px;margin-bottom:4px">${cur} — GASTOS</div>
+        <div style="font-size:20px;font-weight:900;color:var(--red)">${fmtFn(totals[cur].exp)}</div>
+      </div>`;
+  });
+}
+
+function renderMonthlyBars(currency, containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+
+  const months = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(1);
+    d.setMonth(d.getMonth() - i);
+    months.push({ year: d.getFullYear(), month: d.getMonth(), inc: 0, exp: 0 });
+  }
+
+  txs.forEach(t => {
+    if ((t.currency || 'USD').toUpperCase() !== currency) return;
+    const d = new Date(t.date + 'T12:00:00');
+    const m = months.find(x => x.year === d.getFullYear() && x.month === d.getMonth());
+    if (!m) return;
+    if (t.type === 'income') m.inc += t.amount;
+    else                     m.exp += t.amount;
+  });
+
+  const MAX_H = 90;
+  const maxVal = Math.max(...months.map(m => Math.max(m.inc, m.exp)), 1);
+  const MONTH_NAMES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+  el.innerHTML = months.map(m => {
+    const incH = Math.max(Math.round((m.inc / maxVal) * MAX_H), m.inc > 0 ? 3 : 0);
+    const expH = Math.max(Math.round((m.exp / maxVal) * MAX_H), m.exp > 0 ? 3 : 0);
+    return `<div class="bar-group">
+      <div class="bar-group-bars" style="height:${MAX_H}px">
+        <div class="bar income"  style="height:${incH}px"></div>
+        <div class="bar expense" style="height:${expH}px"></div>
+      </div>
+      <div class="bar-label">${MONTH_NAMES[m.month]}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderTopCats() {
+  const el = document.getElementById('stats-top-cats');
+  if (!el) return;
+
+  const totals = {};
+  txs.filter(t => t.type === 'expense').forEach(t => {
+    const catId = t.category || '';
+    if (!totals[catId]) totals[catId] = { usd: 0, uyu: 0 };
+    const cur = (t.currency || 'USD').toUpperCase();
+    if (cur === 'USD') totals[catId].usd += t.amount;
+    else               totals[catId].uyu += t.amount;
+  });
+
+  const sorted = Object.entries(totals)
+    .sort((a, b) => (b[1].usd + b[1].uyu * 0.025) - (a[1].usd + a[1].uyu * 0.025))
+    .slice(0, 6);
+
+  if (!sorted.length) { el.innerHTML = '<p style="color:var(--dim);font-size:13px">Sin gastos registrados.</p>'; return; }
+
+  el.innerHTML = sorted.map(([catId, amts]) => {
+    const icon   = getCatIcon(catId);
+    const name   = getCatName(catId);
+    const usdStr = amts.usd ? `<div class="top-cat-amt">${fmtUSD(amts.usd)}</div>` : '';
+    const uyuStr = amts.uyu ? `<div style="font-size:11px;color:var(--muted);font-weight:700">${fmtUYU(amts.uyu)}</div>` : '';
+    return `<div class="top-cat-item">
+      <span style="font-size:22px">${icon}</span>
+      <span style="flex:1;font-size:13px;font-weight:700">${esc(name)}</span>
+      <div class="top-cat-amounts">${usdStr}${uyuStr}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── Refresh ────────────────────────────────────────────────
+function refresh() {
+  updateSummary();
+  renderChart();
+  renderTxList();
+  updateDebtSummary();
+  renderDebtList();
+  renderPriorityDebt();
+  renderAccountPills();
+  renderAccountList();
+  updateBackupStat();
+  renderStats();
+}
+
+// ── Init ───────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('amtInp').addEventListener('keydown', e => { if (e.key === 'Enter') addTx(); });
+  document.getElementById('catNameInp').addEventListener('keydown', e => { if (e.key === 'Enter') addCat(); });
+  document.getElementById('authEmail').addEventListener('keydown', e => { if (e.key === 'Enter') authSubmit(); });
+  document.getElementById('authPass').addEventListener('keydown', e => { if (e.key === 'Enter') authSubmit(); });
+  document.getElementById('authPass2').addEventListener('keydown', e => { if (e.key === 'Enter') authSubmit(); });
+
+  // Si Firebase no responde en 10s, mostrar login
+  const authTimeout = setTimeout(() => {
+    hideLoading();
+    showAuth();
+    document.getElementById('authError').textContent = 'Sin respuesta del servidor. Revisá tu conexión e intentá de nuevo.';
+  }, 10000);
+
+  auth.onAuthStateChanged(user => {
+    clearTimeout(authTimeout);
+    if (user) {
+      currentUser = user;
+      document.getElementById('logoutBtn').style.display = '';
+      hideAuth();
+      showLoading('Cargando tus datos...');
+      stopListeners();
+      startListeners(user.uid);
+    } else {
+      currentUser = null;
+      document.getElementById('logoutBtn').style.display = 'none';
+      stopListeners();
+      txs = []; customCats = []; hiddenDefaults = []; debts = [];
+      appReady = false;
+      loadedCols.clear();
+      hideLoading();
+      showAuth();
+    }
+  });
+});
+</script>
+</body>
+</html>
