@@ -29,7 +29,7 @@
       --rs:        10px;
     }
 
-    html { scroll-behavior: smooth; zoom: 1.25; }
+    html { scroll-behavior: smooth; zoom: 1.1; }
 
     body {
       background: var(--bg);
@@ -195,10 +195,10 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 2px;
       z-index: 100;
-      padding: 24px 6px;
+      padding: 40px 6px 24px;
     }
 
     .nav-btn {
@@ -268,14 +268,22 @@
 
     .scard-sub { font-size: 11px; color: var(--dim); margin-top: 4px; line-height: 1.4; }
 
+    /* ── General layout (summary + chart side by side) ──── */
+    .general-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
     /* ── Chart card ──────────────────────────────────────── */
     .chart-card {
       background: var(--card); border: 1px solid var(--border);
-      border-radius: var(--r); padding: 20px;
+      border-radius: var(--r); padding: 18px;
     }
 
-    .chart-inner  { display: flex; align-items: center; gap: 20px; }
-    .chart-legend { flex: 1; display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+    .chart-inner  { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+    .chart-legend { width: 100%; display: flex; flex-direction: column; gap: 7px; min-width: 0; }
 
     .leg-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
     .leg-dot  { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
@@ -810,53 +818,60 @@
 
   <div class="acc-pills" id="accPills"></div>
 
-  <div class="stitle">Resumen del mes</div>
-  <div class="summary-grid">
-    <div class="scard usd" id="balUSD-card">
-      <div class="scard-lbl" id="balUSD-lbl">Balance USD</div>
-      <div class="scard-line"><span class="scard-val" id="balUSD">$0.00</span></div>
-      <div class="scard-sub" id="balUSD-sub">Dólares</div>
-    </div>
-    <div class="scard uyu" id="balUYU-card">
-      <div class="scard-lbl" id="balUYU-lbl">Balance UYU</div>
-      <div class="scard-line"><span class="scard-val" id="balUYU">$0</span></div>
-      <div class="scard-sub" id="balUYU-sub">Pesos uru.</div>
-    </div>
-    <div class="scard inc">
-      <div class="scard-lbl">Ingresos</div>
-      <div id="incLines"></div>
-    </div>
-    <div class="scard exp">
-      <div class="scard-lbl">Gastos</div>
-      <div id="expLines"></div>
-    </div>
-  </div>
+  <div class="general-layout">
 
-  <div class="stitle-row">
-    <span class="stitle">Gastos por categoría</span>
-    <button class="mode-toggle pct" id="chartModeBtn" onclick="toggleChartMode()">%</button>
-  </div>
-
-  <div class="chart-cards-wrap">
-    <div class="chart-card" id="chartNoData">
-      <div class="chart-empty">Sin gastos registrados este mes</div>
-    </div>
-
-    <div class="chart-card" id="chartUSDCard" style="display:none">
-      <div class="chart-curr-header"><span class="curr-chip usd">🇺🇸 USD</span></div>
-      <div class="chart-inner" id="chartInnerUSD">
-        <canvas id="donutUSD" width="130" height="130" style="flex-shrink:0"></canvas>
-        <div class="chart-legend" id="legendUSD"></div>
+    <!-- Columna izquierda: resumen -->
+    <div>
+      <div class="stitle">Resumen del mes</div>
+      <div class="summary-grid">
+        <div class="scard usd" id="balUSD-card">
+          <div class="scard-lbl" id="balUSD-lbl">Balance USD</div>
+          <div class="scard-line"><span class="scard-val" id="balUSD">$0.00</span></div>
+          <div class="scard-sub" id="balUSD-sub">Dólares</div>
+        </div>
+        <div class="scard uyu" id="balUYU-card">
+          <div class="scard-lbl" id="balUYU-lbl">Balance UYU</div>
+          <div class="scard-line"><span class="scard-val" id="balUYU">$0</span></div>
+          <div class="scard-sub" id="balUYU-sub">Pesos uru.</div>
+        </div>
+        <div class="scard inc">
+          <div class="scard-lbl">Ingresos</div>
+          <div id="incLines"></div>
+        </div>
+        <div class="scard exp">
+          <div class="scard-lbl">Gastos</div>
+          <div id="expLines"></div>
+        </div>
       </div>
     </div>
 
-    <div class="chart-card" id="chartUYUCard" style="display:none">
-      <div class="chart-curr-header"><span class="curr-chip uyu">🇺🇾 UYU</span></div>
-      <div class="chart-inner" id="chartInnerUYU">
-        <canvas id="donutUYU" width="130" height="130" style="flex-shrink:0"></canvas>
-        <div class="chart-legend" id="legendUYU"></div>
+    <!-- Columna derecha: gráfico -->
+    <div>
+      <div class="stitle-row">
+        <span class="stitle">Por categoría</span>
+        <button class="mode-toggle pct" id="chartModeBtn" onclick="toggleChartMode()">%</button>
+      </div>
+      <div class="chart-cards-wrap">
+        <div class="chart-card" id="chartNoData">
+          <div class="chart-empty">Sin gastos registrados este mes</div>
+        </div>
+        <div class="chart-card" id="chartUSDCard" style="display:none">
+          <div class="chart-curr-header"><span class="curr-chip usd">🇺🇸 USD</span></div>
+          <div class="chart-inner" id="chartInnerUSD">
+            <canvas id="donutUSD" width="180" height="180"></canvas>
+            <div class="chart-legend" id="legendUSD"></div>
+          </div>
+        </div>
+        <div class="chart-card" id="chartUYUCard" style="display:none">
+          <div class="chart-curr-header"><span class="curr-chip uyu">🇺🇾 UYU</span></div>
+          <div class="chart-inner" id="chartInnerUYU">
+            <canvas id="donutUYU" width="180" height="180"></canvas>
+            <div class="chart-legend" id="legendUYU"></div>
+          </div>
+        </div>
       </div>
     </div>
+
   </div>
 
   <div id="priodebtSection" style="display:none">
@@ -1670,11 +1685,15 @@ function renderCurrChart(currency, canvasId, innerId, legendId) {
 
   const total = entries.reduce((s, e) => s + e.value, 0);
 
+  // Assign colors by position so each category always gets a distinct color
+  entries.forEach((e, i) => { e.color = PALETTE[i % PALETTE.length]; });
+
   const canvas = document.getElementById(canvasId);
   const ctx    = canvas.getContext('2d');
-  const W = 130, cx = W / 2, cy = W / 2, R = 56, r = 33;
-  const GAP = entries.length > 1 ? 0.05 : 0;
+  const W = 180, cx = W / 2, cy = W / 2, R = 78, r = 46;
+  const GAP = entries.length > 1 ? 0.04 : 0;
 
+  canvas.width = canvas.height = W;
   ctx.clearRect(0, 0, W, W);
   let angle = -Math.PI / 2;
 
@@ -1690,16 +1709,18 @@ function renderCurrChart(currency, canvasId, innerId, legendId) {
     angle += sweep;
   });
 
+  const bg = getComputedStyle(document.documentElement).getPropertyValue('--card').trim() || '#1e1e2e';
   ctx.beginPath();
-  ctx.arc(cx, cy, r - 1.5, 0, Math.PI * 2);
-  ctx.fillStyle = '#1a1a28';
+  ctx.arc(cx, cy, r - 2, 0, Math.PI * 2);
+  ctx.fillStyle = bg;
   ctx.fill();
 
-  ctx.fillStyle = '#e2e8f0';
-  ctx.font = 'bold 11px system-ui';
+  const fg = getComputedStyle(document.documentElement).getPropertyValue('--muted').trim() || '#8892a4';
+  ctx.fillStyle = fg;
+  ctx.font = 'bold 13px system-ui';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(entries.length === 1 ? '1 cat.' : entries.length + ' cats', cx, cy);
+  ctx.fillText(entries.length + (entries.length === 1 ? ' cat.' : ' cats'), cx, cy);
 
   document.getElementById(legendId).innerHTML = entries.map(e => {
     const label = chartMode === 'pct'
