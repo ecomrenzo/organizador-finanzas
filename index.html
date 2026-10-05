@@ -827,25 +827,6 @@
   </div>
 </div>
 
-<!-- ── Auth Overlay ────────────────────────────────────────── -->
-<div id="authOverlay" class="overlay hidden">
-  <div class="auth-card">
-    <div class="auth-logo">💰</div>
-    <div class="auth-title">Finanzas Personales</div>
-    <div class="auth-sub">Tu dinero, siempre sincronizado</div>
-    <div class="auth-tabs">
-      <button class="auth-tab on" id="tabLogin"    onclick="switchAuthMode('login')">Iniciar sesión</button>
-      <button class="auth-tab"    id="tabRegister" onclick="switchAuthMode('register')">Registrarse</button>
-    </div>
-    <div class="auth-inputs">
-      <input type="email"    id="authEmail" placeholder="Email" autocomplete="email" inputmode="email">
-      <input type="password" id="authPass"  placeholder="Contraseña" autocomplete="current-password">
-      <input type="password" id="authPass2" placeholder="Confirmar contraseña" autocomplete="new-password" style="display:none">
-    </div>
-    <div class="auth-error" id="authError"></div>
-    <button class="submit-btn" id="authBtn" onclick="authSubmit()">Iniciar sesión</button>
-  </div>
-</div>
 
 <!-- ── Header ──────────────────────────────────────────────── -->
 <div class="header">
@@ -867,13 +848,6 @@
         <div class="month-pick-grid" id="monthPickGrid"></div>
       </div>
     </div>
-    <button class="logout-btn" id="logoutBtn" onclick="logout()" title="Cerrar sesión" style="display:none">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
-        <polyline points="16 17 21 12 16 7"/>
-        <line x1="21" y1="12" x2="9" y2="12"/>
-      </svg>
-    </button>
   </div>
 </div>
 
@@ -1419,7 +1393,6 @@
 
 <!-- ── Firebase SDK ────────────────────────────────────────── -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
 <script>
@@ -1440,8 +1413,7 @@ const firebaseConfig = {
 // ══════════════════════════════════════════════════════════════
 
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db   = firebase.firestore();
+const db = firebase.firestore();
 db.enablePersistence().catch(() => {});
 
 // ── Category system ────────────────────────────────────────
@@ -1504,8 +1476,7 @@ let calEvtType     = 'income';
 let savingsGoalUSD = 0;
 let savingsGoalUYU = 0;
 
-// Firebase state
-let currentUser        = null;
+// App state
 let appReady           = false;
 const loadedCols       = new Set();
 let firestoreListeners = [];
@@ -1556,87 +1527,9 @@ function hideLoading() {
   document.getElementById('loadingOverlay').classList.add('hidden');
 }
 
-function showAuth() {
-  document.getElementById('authError').textContent = '';
-  document.getElementById('authEmail').value = '';
-  document.getElementById('authPass').value  = '';
-  document.getElementById('authPass2').value = '';
-  document.getElementById('authOverlay').classList.remove('hidden');
-}
-
-function hideAuth() {
-  document.getElementById('authOverlay').classList.add('hidden');
-}
-
-// ── Auth ───────────────────────────────────────────────────
-let authMode = 'login';
-
-function switchAuthMode(mode) {
-  authMode = mode;
-  document.getElementById('tabLogin').classList.toggle('on', mode === 'login');
-  document.getElementById('tabRegister').classList.toggle('on', mode === 'register');
-  document.getElementById('authPass2').style.display = mode === 'register' ? '' : 'none';
-  document.getElementById('authBtn').textContent = mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta';
-  document.getElementById('authError').textContent = '';
-}
-
-function getAuthErr(code) {
-  const map = {
-    'auth/email-already-in-use':    'Ese email ya está registrado',
-    'auth/invalid-email':            'Email inválido',
-    'auth/weak-password':            'La contraseña debe tener al menos 6 caracteres',
-    'auth/user-not-found':           'No encontramos esa cuenta',
-    'auth/wrong-password':           'Contraseña incorrecta',
-    'auth/invalid-credential':       'Email o contraseña incorrectos',
-    'auth/too-many-requests':        'Demasiados intentos. Esperá unos minutos',
-    'auth/network-request-failed':   'Error de conexión. Verificá tu internet',
-    'auth/invalid-api-key':          'API key inválida — revisá FIREBASE_CONFIG',
-    'auth/operation-not-allowed':    'Autenticación por email no está activada en Firebase Console',
-    'auth/configuration-not-found':  'Proyecto Firebase no encontrado — revisá projectId',
-    'auth/api-key-not-valid':        'API key inválida — revisá FIREBASE_CONFIG',
-    'auth/app-not-authorized':       'App no autorizada — revisá authDomain en Firebase Console',
-  };
-  return map[code] || ('Error: ' + code);
-}
-
-async function authSubmit() {
-  const email = document.getElementById('authEmail').value.trim();
-  const pass  = document.getElementById('authPass').value;
-  const pass2 = document.getElementById('authPass2').value;
-  const errEl = document.getElementById('authError');
-
-  if (!email || !pass) { errEl.textContent = 'Completá email y contraseña'; return; }
-
-  if (authMode === 'register') {
-    if (pass !== pass2) { errEl.textContent = 'Las contraseñas no coinciden'; return; }
-    if (pass.length < 6) { errEl.textContent = 'La contraseña debe tener al menos 6 caracteres'; return; }
-  }
-
-  errEl.textContent = '';
-  document.getElementById('authBtn').textContent = '...';
-  document.getElementById('authBtn').disabled = true;
-
-  try {
-    if (authMode === 'login') {
-      await auth.signInWithEmailAndPassword(email, pass);
-    } else {
-      await auth.createUserWithEmailAndPassword(email, pass);
-    }
-  } catch(e) {
-    errEl.textContent = getAuthErr(e.code);
-    document.getElementById('authBtn').textContent = authMode === 'login' ? 'Iniciar sesión' : 'Crear cuenta';
-    document.getElementById('authBtn').disabled = false;
-  }
-}
-
-function logout() {
-  if (!confirm('¿Cerrar sesión?')) return;
-  auth.signOut();
-}
-
 // ── Firestore helpers ──────────────────────────────────────
 function userBase() {
-  return db.collection('users').doc(auth.currentUser.uid);
+  return db.collection('data').doc('main');
 }
 
 // ── Firestore listeners ────────────────────────────────────
@@ -1655,30 +1548,28 @@ function markLoaded(name) {
   setTimeout(checkLocalMigration, 400);
 }
 
-function startListeners(uid) {
+function startListeners() {
   appReady = false;
   loadedCols.clear();
-  const base = db.collection('users').doc(uid);
+  const base = userBase();
 
   function onFsError(err) {
     console.error('Firestore error:', err.code, err.message);
     hideLoading();
-    showAuth();
-    document.getElementById('authError').textContent =
-      err.code === 'permission-denied'
-        ? 'Sin permiso en Firestore. Revisá las Reglas de seguridad en Firebase Console.'
-        : err.code === 'unavailable'
-          ? 'Firestore no disponible. Verificá tu internet.'
-          : 'Error Firestore: ' + err.code;
+    if (err.code === 'permission-denied') {
+      toast('Sin permiso en Firestore. Actualizá las reglas de seguridad en Firebase Console ⚠️');
+    } else if (err.code === 'unavailable') {
+      toast('Firestore no disponible. Verificá tu internet ⚠️');
+    } else {
+      toast('Error Firestore: ' + err.code + ' ⚠️');
+    }
   }
 
-  // Timeout de 12s: si no cargó, mostrar error útil
+  // Timeout de 12s si no carga
   const loadTimeout = setTimeout(() => {
     if (appReady) return;
     hideLoading();
-    showAuth();
-    document.getElementById('authError').textContent =
-      'Tiempo de espera agotado. Verificá que Firestore esté creado en Firebase Console (Paso 3 de la guía).';
+    toast('Tiempo de espera agotado. Verificá tu conexión e internet ⚠️');
   }, 12000);
 
   function markLoadedWithTimeout(name) {
@@ -3286,37 +3177,9 @@ function renderCalendar() {
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('amtInp').addEventListener('keydown', e => { if (e.key === 'Enter') addTx(); });
   document.getElementById('catNameInp').addEventListener('keydown', e => { if (e.key === 'Enter') addCat(); });
-  document.getElementById('authEmail').addEventListener('keydown', e => { if (e.key === 'Enter') authSubmit(); });
-  document.getElementById('authPass').addEventListener('keydown', e => { if (e.key === 'Enter') authSubmit(); });
-  document.getElementById('authPass2').addEventListener('keydown', e => { if (e.key === 'Enter') authSubmit(); });
 
-  // Si Firebase no responde en 10s, mostrar login
-  const authTimeout = setTimeout(() => {
-    hideLoading();
-    showAuth();
-    document.getElementById('authError').textContent = 'Sin respuesta del servidor. Revisá tu conexión e intentá de nuevo.';
-  }, 10000);
-
-  auth.onAuthStateChanged(user => {
-    clearTimeout(authTimeout);
-    if (user) {
-      currentUser = user;
-      document.getElementById('logoutBtn').style.display = '';
-      hideAuth();
-      showLoading('Cargando tus datos...');
-      stopListeners();
-      startListeners(user.uid);
-    } else {
-      currentUser = null;
-      document.getElementById('logoutBtn').style.display = 'none';
-      stopListeners();
-      txs = []; customCats = []; hiddenDefaults = []; debts = [];
-      appReady = false;
-      loadedCols.clear();
-      hideLoading();
-      showAuth();
-    }
-  });
+  showLoading('Cargando tus datos...');
+  startListeners();
 });
 </script>
 </body>
