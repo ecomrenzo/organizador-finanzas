@@ -1,0 +1,14 @@
+{
+  "name": "finanzas-personales",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "test": "node --test test/api.test.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.6.0"
+  }
+}
